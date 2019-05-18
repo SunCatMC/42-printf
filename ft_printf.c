@@ -18,18 +18,23 @@ static size_t	print_str(char *str)
 {
 	size_t len;
 
+	if (str == NULL)
+		return (write(1, "(null)", 6));
 	len = ft_strlen(str);
 	return (write(1, str, len));
 }
 
 static size_t	parse_conversion(char **format, va_list	*argptr)
 {
+	char	ch;
+
 	++*format;
-	if (*format == '\0')
+	ch = **format;
+	if (ch == '\0')
 		return (0);
 	else
 		++*format;
-	if (*(*format - 1) == 's')
+	if (ch == 's')
 		return (print_str(va_arg(*argptr, char *)));
 	return (0);
 }
