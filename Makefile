@@ -6,14 +6,14 @@
 #    By: htryndam <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/16 22:52:18 by htryndam          #+#    #+#              #
-#    Updated: 2019/05/16 23:08:53 by htryndam         ###   ########.fr        #
+#    Updated: 2019/05/23 23:59:57 by htryndam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
 
 IDIR = .
-SOURCES = ft_printf.c
+SOURCES = ft_printf.c buffer.c
 
 SRC = $(SOURCES)
 
