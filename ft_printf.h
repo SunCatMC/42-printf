@@ -18,7 +18,7 @@ typedef struct	s_pbuff	{
 	char	buff[PRINTF_BUFF_SIZE];
 	int		size;
 }				t_pbuff;
-int		print_printf_buff(t_pbuff *pbuff);
-int		putstr_printf_buff(t_pbuff *pbuff, const char *str);
-int		putmem_printf_buff(t_pbuff *pbuff, const char *mem, int size);
+int		print_pbuff(t_pbuff *pbuff);
+int		putstr_pbuff(t_pbuff *pbuff, const char *str);
+int		putmem_pbuff(t_pbuff *pbuff, const char *mem, int size);
 #endif

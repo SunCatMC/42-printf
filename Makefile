@@ -20,7 +20,8 @@ SRC = $(SOURCES)
 LIBNAME = ft
 LIBDIR = libft
 LIBFILE = libft.a
-LIBOBJ = ft_strlen.o ft_strchr.o
+#LIBOBJ = ft_strlen.o ft_strchr.o
+LIBOBJ = *.o
 
 CFLAGS = -Wall -Werror -Wextra
 DFLAGS = -g

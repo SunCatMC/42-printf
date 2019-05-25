@@ -17,8 +17,8 @@
 static int	print_str(char *str, t_pbuff *pbuff)
 {
 	if (str == NULL)
-		return (putmem_printf_buff(pbuff, "(null)", 6));
-	return (putstr_printf_buff(pbuff, str));
+		return (putmem_pbuff(pbuff, "(null)", 6));
+	return (putstr_pbuff(pbuff, str));
 }
 
 static int	parse_conversion(const char **format,
@@ -50,15 +50,15 @@ int			ft_printf(const char *format, ...)
 	size = 0;
 	while ((ptr = ft_strchr(format, '%')))
 	{
-		if (putmem_printf_buff(&pbuff, format, ptr - format) < 0)
+		if ((ret = putmem_pbuff(&pbuff, format, ptr - format)) < 0)
 			return (-1);
-		size += ptr - format;
+		size += ret;
 		format = ptr;
 		size += parse_conversion(&format, &pbuff, &argptr);
 	}
 	va_end(argptr);
-	ret = putstr_printf_buff(&pbuff, format);
+	ret = putstr_pbuff(&pbuff, format);
 	if (ret >= 0 && pbuff.size > 0)
-		ret += print_printf_buff(&pbuff);
+		ret += print_pbuff(&pbuff);
 	return (ret >= 0 ? size + ret : -1);
 }
