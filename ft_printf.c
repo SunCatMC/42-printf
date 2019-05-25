@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 20:31:38 by htryndam          #+#    #+#             */
-/*   Updated: 2019/05/24 00:00:05 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/05/25 20:56:02 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,16 @@ static int	parse_conversion(const char **format,
 static int	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
 {
 	char	*ptr;
-	int		size;
-	int		ret;
 
-	size = 0;
 	while ((ptr = ft_strchr(format, '%')))
 	{
-		if ((ret = putmem_pbuff(pbuff, format, ptr - format)) < 0)
+		if ((putmem_pbuff(pbuff, format, ptr - format)) < 0)
 			return (-1);
-		size += ret;
 		format = ptr;
-		size += parse_conversion(&format, pbuff, argptr);
+		if (parse_conversion(&format, pbuff, argptr) < 0)
+			return (-1);
 	}
-	ret = putstr_pbuff(pbuff, format);
-	if (ret >= 0 && pbuff->size > 0)
-		ret += print_pbuff(pbuff);
-	return (ret >= 0 ? size + ret : -1);
+	return (putstr_pbuff(pbuff, format));
 }
 
 int			ft_printf(const char *format, ...)
@@ -65,8 +59,11 @@ int			ft_printf(const char *format, ...)
 	t_pbuff	pbuff;
 
 	pbuff.size = 0;
+	pbuff.printed = 0;
 	va_start(argptr, format);
 	ret = printf_base(format, &pbuff, &argptr);
 	va_end(argptr);
-	return (ret);
+	if (ret >= 0)
+		ret = flush_pbuff(&pbuff);
+	return (ret < 0 ? -1 : pbuff.printed);
 }
