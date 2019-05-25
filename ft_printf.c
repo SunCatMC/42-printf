@@ -37,28 +37,36 @@ static int	parse_conversion(const char **format,
 	return (0);
 }
 
-int			ft_printf(const char *format, ...)
+static int	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
 {
+	char	*ptr;
 	int		size;
 	int		ret;
-	char	*ptr;
+
+	size = 0;
+	while ((ptr = ft_strchr(format, '%')))
+	{
+		if ((ret = putmem_pbuff(pbuff, format, ptr - format)) < 0)
+			return (-1);
+		size += ret;
+		format = ptr;
+		size += parse_conversion(&format, pbuff, argptr);
+	}
+	ret = putstr_pbuff(pbuff, format);
+	if (ret >= 0 && pbuff->size > 0)
+		ret += print_pbuff(pbuff);
+	return (ret >= 0 ? size + ret : -1);
+}
+
+int			ft_printf(const char *format, ...)
+{
+	int		ret;
 	va_list	argptr;
 	t_pbuff	pbuff;
 
 	pbuff.size = 0;
 	va_start(argptr, format);
-	size = 0;
-	while ((ptr = ft_strchr(format, '%')))
-	{
-		if ((ret = putmem_pbuff(&pbuff, format, ptr - format)) < 0)
-			return (-1);
-		size += ret;
-		format = ptr;
-		size += parse_conversion(&format, &pbuff, &argptr);
-	}
+	ret = printf_base(format, &pbuff, &argptr);
 	va_end(argptr);
-	ret = putstr_pbuff(&pbuff, format);
-	if (ret >= 0 && pbuff.size > 0)
-		ret += print_pbuff(&pbuff);
-	return (ret >= 0 ? size + ret : -1);
+	return (ret);
 }
