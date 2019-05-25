@@ -6,7 +6,7 @@
 #    By: htryndam <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/16 22:52:18 by htryndam          #+#    #+#              #
-#    Updated: 2019/05/23 23:59:57 by htryndam         ###   ########.fr        #
+#    Updated: 2019/05/25 20:09:11 by htryndam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,8 @@ all: $(NAME)
 $(NAME):
 	@$(MAKE) -C $(LIBDIR)
 	@gcc $(CFLAGS) -I $(IDIR) -I $(LIBDIR) -c $(SRC)
-	@ar rc $(NAME) $(addprefix $(LIBDIR)/,$(LIBOBJ)) $(addsuffix .o,$(basename $(SRC)))
+	@ar rc $(NAME) $(addprefix $(LIBDIR)/,$(LIBOBJ)) \
+			$(addsuffix .o,$(basename $(SRC)))
 
 clean:
 	@$(MAKE) -C $(LIBDIR) clean
@@ -46,5 +47,5 @@ re: fclean all
 debug: fclean
 	@$(MAKE) -C $(LIBDIR) debug
 	@gcc $(CFLAGS) $(DFLAGS) -I $(IDIR) -I $(LIBDIR) -c $(SRC)
-	@gcc $(CFLAGS) $(DFLAGS) $(addsuffix .o,$(basename $(SRC))) -I $(IDIR) \
-		-I $(LIBDIR) -L $(LIBDIR) -l$(LIBNAME) -o $(NAME)
+	@ar rc $(NAME) $(addprefix $(LIBDIR)/,$(LIBOBJ)) \
+			$(addsuffix .o,$(basename $(SRC)))
