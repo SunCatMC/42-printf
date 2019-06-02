@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:29:23 by htryndam          #+#    #+#             */
-/*   Updated: 2019/05/25 20:55:53 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/02 23:01:42 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int		flush_pbuff(t_pbuff *pbuff)
 	if (ret > 0)
 		pbuff->printed += ret;
 	pbuff->size = 0;
-	return (ret < 0 ? -1 : 0);
+	return (ret);
 }
 
 int		putchar_pbuff(t_pbuff *pbuff, const char ch)
@@ -41,22 +41,40 @@ int		putchar_pbuff(t_pbuff *pbuff, const char ch)
 
 int		putstr_pbuff(t_pbuff *pbuff, const char *str)
 {
-	while (*str != '\0')
+	const char	*ptr;
+	int			ret;
+
+	while ((ptr = ft_memccpy(&pbuff->buff[pbuff->size], str, '\0',
+		PRINTF_BUFF_SIZE - pbuff->size)) == NULL)
 	{
-		if (putchar_pbuff(pbuff, *str))
-			return (-1);
-		str++;
+		str += PRINTF_BUFF_SIZE - pbuff->size;
+		pbuff->size = PRINTF_BUFF_SIZE;
+		if ((ret = flush_pbuff(pbuff)) < 0)
+			return (ret);
 	}
+	ptr--;
+	pbuff->size += ptr - &pbuff->buff[pbuff->size];
+	// unreachable?
+	if (pbuff->size == PRINTF_BUFF_SIZE)
+		return (flush_pbuff(pbuff));
 	return (0);
 }
 
 int		putmem_pbuff(t_pbuff *pbuff, const char *mem, int size)
 {
-	while (size-- > 0)
+	int		len;
+	int		ret;
+
+	while (size >= (len = PRINTF_BUFF_SIZE - pbuff->size))
 	{
-		if (putchar_pbuff(pbuff, *mem))
-			return (-1);
-		mem++;
+		ft_memcpy(&pbuff->buff[pbuff->size], mem, len);
+		mem += len;
+		size -= len;
+		pbuff->size = PRINTF_BUFF_SIZE;
+		if ((ret = flush_pbuff(pbuff)) < 0)
+			return (ret);
 	}
+	ft_memcpy(&pbuff->buff[pbuff->size], mem, size);
+	pbuff->size += size;
 	return (0);
 }
