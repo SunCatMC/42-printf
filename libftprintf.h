@@ -6,11 +6,12 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/18 19:30:43 by htryndam          #+#    #+#             */
-/*   Updated: 2019/05/18 19:30:45 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/02 20:50:39 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFTPRINTF_H
 # define LIBFTPRINTF_H
+
 int	ft_printf(const char *format, ...);
 #endif
