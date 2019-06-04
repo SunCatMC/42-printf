@@ -19,8 +19,25 @@ typedef struct	s_pbuff	{
 	int		size;
 	int		printed;
 }				t_pbuff;
-int				print_pbuff(const t_pbuff *pbuff);
-int				flush_pbuff(t_pbuff *pbuff);
-int				putstr_pbuff(t_pbuff *pbuff, const char *str);
-int				putmem_pbuff(t_pbuff *pbuff, const char *mem, int size);
+enum			e_flags {
+	F_ALTERNATE = 1,
+	F_LEFT_AJUSTMENT = 2,
+	F_PLUS = 4,
+	F_BLANKS = 8,
+	F_ZERO = 16,
+	F_GROUPING = 32,
+	L_CHAR = 64,
+	L_SHORT = 128,
+	L_LONG = 256,
+	L_LONGLONG = 512,
+	L_LONGDOUBLE = 1024
+};
+typedef struct	s_poptionals {
+	int				width;
+	unsigned short	flags;
+	int				precision;
+}				t_poptionals;
+void			flush_pbuff(t_pbuff *pbuff);
+void			putstr_pbuff(t_pbuff *pbuff, const char *str);
+void			putmem_pbuff(t_pbuff *pbuff, const char *mem, int size);
 #endif
