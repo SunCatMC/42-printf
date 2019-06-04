@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/02 20:50:22 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/04 18:10:42 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ enum			e_flags {
 	L_LONGDOUBLE = 1024
 };
 typedef struct	s_poptionals {
+	int				param;
 	int				width;
 	unsigned short	flags;
 	int				precision;
