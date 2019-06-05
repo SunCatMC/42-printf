@@ -12,7 +12,6 @@
 
 #include "libft.h"
 #include "ft_printf.h"
-#include <stdarg.h>
 
 static void	print_str(char *str, t_pbuff *pbuff)
 {
@@ -38,11 +37,13 @@ static void	parse_conversion(const char **format,
 static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
 {
 	char	*ptr;
+	t_popts	opts;
 
 	while ((ptr = ft_strchr(format, '%')))
 	{
 		putmem_pbuff(pbuff, format, ptr - format);
 		format = ptr;
+		parse_optionals(&format, &opts, argptr);
 		parse_conversion(&format, pbuff, argptr);
 	}
 	putstr_pbuff(pbuff, format);
