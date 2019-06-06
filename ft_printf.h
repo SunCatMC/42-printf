@@ -26,13 +26,12 @@ enum			e_printf_flags {
 	F_PLUS = 4,
 	F_BLANKS = 8,
 	F_ZERO = 16,
-	F_GROUPING = 32,
-	L_CHAR = 64,
-	L_SHORT = 128,
-	L_LONG = 256,
-	L_LONGLONG = 512,
-	L_LONGDOUBLE = 1024,
-	P_IS_PRECISE = 2048
+	L_CHAR = 32,
+	L_SHORT = 64,
+	L_LONG = 126,
+	L_LONGLONG = 256,
+	L_LONGDOUBLE = 512,
+	P_IS_PRECISE = 1024
 };
 typedef struct	s_popts {
 	unsigned int	param;
@@ -42,7 +41,7 @@ typedef struct	s_popts {
 }				t_popts;
 void			flush_pbuff(t_pbuff *pbuff);
 void			putstr_pbuff(t_pbuff *pbuff, const char *str);
+void			memset_pbuff(t_pbuff *pbuff, char ch, int size)
 void			putmem_pbuff(t_pbuff *pbuff, const char *mem, int size);
-void			parse_optionals(const char **format, t_popts *opts,
-		va_list *argptr);
+void			parse_optionals(const char **format, t_popts *opts);
 #endif

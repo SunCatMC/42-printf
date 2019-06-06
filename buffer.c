@@ -19,7 +19,7 @@ void	flush_pbuff(t_pbuff *pbuff)
 	int ret;
 
 	ret = write(1, pbuff->buff, pbuff->size);
-	pbuff->printed = ret < 0 ? -1 : pbuff->printed + ret;
+	pbuff->printed = pbuff->printed < 0 || ret < 0 ? -1 : pbuff->printed + ret;
 	pbuff->size = 0;
 }
 
@@ -47,6 +47,22 @@ void	putstr_pbuff(t_pbuff *pbuff, const char *str)
 	// unreachable?
 	//if (pbuff->size == PRINTF_BUFF_SIZE)
 	//	return (flush_pbuff(pbuff));
+}
+
+void	memset_pbuff(t_pbuff *pbuff, char ch, int size)
+{
+	int		len;
+
+	while (size >= (len = PRINTF_BUFF_SIZE - pbuff->size))
+	{
+		ft_memset(&pbuff->buff[pbuff->size], ch, len);
+		mem += len;
+		size -= len;
+		pbuff->size = PRINTF_BUFF_SIZE;
+		flush_pbuff(pbuff);
+	}
+	ft_memset(&pbuff->buff[pbuff->size], ch, size);
+	pbuff->size += size;
 }
 
 void	putmem_pbuff(t_pbuff *pbuff, const char *mem, int size)

@@ -13,14 +13,31 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-static void	print_str(char *str, t_pbuff *pbuff)
+static void	print_str(char *str, t_popts *opts, t_pbuff *pbuff)
 {
+	const char	null[] = "(null)";
+	char		*ptr;
+
 	if (str == NULL)
-		return (putmem_pbuff(pbuff, "(null)", 6));
-	putstr_pbuff(pbuff, str);
+		str = null;
+	if (opts->flags & P_IS_PRECISE)
+	{
+		ptr = (char *)ft_memchr(str, '\0', opts->precision);
+		if (opts->precision < opts->width)
+		{
+
+			return(putmem_pbuff(pbuff, str, ptr ? ptr - str : opts->precision));
+		}
+		putmem_pbuff(pbuff, str, opts->precision);
+	}
+	ptr = (char *)ft_memchr(str, '\0', opts->width);
+	if (ptr == NULL)
+		return(putstr_pbuff(pbuff, str));
+	memset_pbuff(pbuff, ' ', opts->width - (ptr - str));
+	putmem_pbuff(pbuff, str, ptr - str);
 }
 
-static void	parse_conversion(const char **format,
+static void	parse_conversion(const char **format, t_popts *opts,
 						t_pbuff *pbuff, va_list *argptr)
 {
 	char	ch;
@@ -31,7 +48,7 @@ static void	parse_conversion(const char **format,
 	else
 		++*format;
 	if (ch == 's')
-		print_str(va_arg(*argptr, char *), pbuff);
+		print_str(va_arg(*argptr, char *), opts, pbuff);
 }
 
 static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
@@ -43,8 +60,8 @@ static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
 	{
 		putmem_pbuff(pbuff, format, ptr - format);
 		format = ptr;
-		parse_optionals(&format, &opts, argptr);
-		parse_conversion(&format, pbuff, argptr);
+		parse_optionals(&format, &opts);
+		parse_conversion(&format, &opts, pbuff, argptr);
 	}
 	putstr_pbuff(pbuff, format);
 }

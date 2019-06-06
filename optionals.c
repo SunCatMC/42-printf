@@ -25,7 +25,7 @@ static int	simple_atoi_skip(char **str)
 	return (num);
 }
 
-void		parse_optionals(const char **format, t_popts *opts va_list *argptr)
+void		parse_optionals(const char **format, t_popts *opts)
 {
 	int		num;
 
@@ -36,8 +36,11 @@ void		parse_optionals(const char **format, t_popts *opts va_list *argptr)
 	}
 	else if (is_digit(**format))
 		opts->width = simple_atoi_skip(format);
+	else
+		opts->width = 0;
 	opts->flags = 0;
-	while (**format != '.' && )
+	while (**format == '#' || **format == '-' || **format == '+'
+		|| **format == ' ' || **format == '0' || **format == '.')
 	{
 		if (**format == '#')
 			opts->flags = opts->flags | F_SPECIAL;
@@ -49,13 +52,11 @@ void		parse_optionals(const char **format, t_popts *opts va_list *argptr)
 			opts->flags = opts->flags | F_BLANKS;
 		if (**format == '0')
 			opts->flags = opts->flags | F_ZERO;
-		if (**format == '\'')
-			opts->flags = opts->flags | F_GROUPING;
+		if (**format == '.')
+		{
+			opts->precision = simple_atoi_skip(*(++(*format)));
+			opts->flags = opts->flags | P_IS_PRECISE;
+		}
 		*format++;
-	}
-	if (**format == '.')
-	{
-		opts->precision = simple_atoi_skip(*(++(*format)));
-		opts->flags = opts->flags | P_IS_PRECISE;
 	}
 }
