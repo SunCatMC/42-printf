@@ -6,57 +6,60 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/04 13:00:50 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/04 13:01:52 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/07 18:51:16 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "ft_printf.h"
 
-static int	simple_atoi_skip(char **str)
+static int	simple_atoi_skip(const char **str)
 {
 	int	num;
 
 	num = 0;
-	while (**format >= 0 && **str <= 9)
+	while (ft_isdigit(**str))
 	{
-		num *= 10 += *((*str)++) - '0';
+		num = num * 10 + **str - '0';
+		++*str;
 	}
+	--*str;
 	return (num);
 }
 
-void		parse_optionals(const char **format, t_popts *opts)
+void		parse_optionals(const char **fmt, t_popts *opts)
 {
-	int		num;
+	/*int		num;
 
-	if (**format == *)
+	if (**fmt == '*')
 	{
 		num = va_arg(*argptr, int);
 		opts->width = num < 0 ? -num : num;
 	}
-	else if (is_digit(**format))
-		opts->width = simple_atoi_skip(format);
-	else
-		opts->width = 0;
+	*/
+	opts->width = 0;
 	opts->flags = 0;
-	while (**format == '#' || **format == '-' || **format == '+'
-		|| **format == ' ' || **format == '0' || **format == '.')
+	while (**fmt == '#' || **fmt == '-' || **fmt == '+' || **fmt == ' '
+		|| **fmt == '0' || **fmt == '.' || ft_isdigit(**fmt))
 	{
-		if (**format == '#')
+		if (ft_isdigit(**fmt))
+			opts->width = simple_atoi_skip(fmt);
+		else if (**fmt == '#')
 			opts->flags = opts->flags | F_SPECIAL;
-		if (**format == '-')
+		else if (**fmt == '-')
 			opts->flags = opts->flags | F_LEFT;
-		if (**format == '+')
+		else if (**fmt == '+')
 			opts->flags = opts->flags | F_PLUS;
-		if (**format == ' ')
+		else if (**fmt == ' ')
 			opts->flags = opts->flags | F_BLANKS;
-		if (**format == '0')
+		else if (**fmt == '0')
 			opts->flags = opts->flags | F_ZERO;
-		if (**format == '.')
+		else if (**fmt == '.')
 		{
-			opts->precision = simple_atoi_skip(*(++(*format)));
+			++*fmt;
+			opts->precision = simple_atoi_skip(fmt);
 			opts->flags = opts->flags | P_IS_PRECISE;
 		}
-		*format++;
+		++*fmt;
 	}
 }
