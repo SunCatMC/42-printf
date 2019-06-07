@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 18:51:10 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/07 20:13:55 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ void			flush_pbuff(t_pbuff *pbuff);
 void			putstr_pbuff(t_pbuff *pbuff, const char *str);
 void			memset_pbuff(t_pbuff *pbuff, char ch, int size);
 void			putmem_pbuff(t_pbuff *pbuff, const char *mem, int size);
-void			parse_optionals(const char **format, t_popts *opts);
+void			parse_optionals(const char **format,
+		t_popts *opts, va_list *argptr);
 #endif

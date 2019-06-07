@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:29:23 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 18:50:54 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/07 20:13:39 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,8 @@ void	putstr_pbuff(t_pbuff *pbuff, const char *str)
 		pbuff->size = PRINTF_BUFF_SIZE;
 		flush_pbuff(pbuff);
 	}
-	ptr--;
+	--ptr;
 	pbuff->size += ptr - &pbuff->buff[pbuff->size];
-	// unreachable?
-	//if (pbuff->size == PRINTF_BUFF_SIZE)
-	//	return (flush_pbuff(pbuff));
 }
 
 void	memset_pbuff(t_pbuff *pbuff, char ch, int size)

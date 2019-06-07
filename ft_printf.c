@@ -6,40 +6,30 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 20:31:38 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 18:51:02 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/07 20:13:46 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "ft_printf.h"
 
-static void	print_str(char *str, t_popts *opts, t_pbuff *pbuff)
+static void	printf_str(const char *str, t_popts *opts, t_pbuff *pbuff)
 {
-	char	null[] = "(null)";
-	char	*ptr;
-	int		len;
+	const char	null[] = "(null)";
+	char		*ptr;
+	int			len;
 
 	if (str == NULL)
 		str = null;
 	if (opts->flags & P_IS_PRECISE)
-	{
 		ptr = (char *)ft_memchr(str, '\0', opts->precision);
-		len = ptr ? ptr - str : opts->precision;
-		if (!(opts->flags & F_LEFT) && len < opts->width)
-			memset_pbuff(pbuff, ' ', opts->width - len);
-		putmem_pbuff(pbuff, str, len);
-		if ((opts->flags & F_LEFT) && len < opts->width)
-			memset_pbuff(pbuff, ' ', opts->width - len);
-		return ;
-	}
-	ptr = (char *)ft_memchr(str, '\0', opts->width);
-	if (ptr == NULL)
+	else if ((ptr = (char *)ft_memchr(str, '\0', opts->width)) == NULL)
 		return (putstr_pbuff(pbuff, str));
-	len = ptr - str;
-	if (!(opts->flags & F_LEFT))
+	len = ptr ? ptr - str : opts->precision;
+	if (!(opts->flags & F_LEFT) && len < opts->width)
 		memset_pbuff(pbuff, ' ', opts->width - len);
 	putmem_pbuff(pbuff, str, len);
-	if ((opts->flags & F_LEFT))
+	if ((opts->flags & F_LEFT) && len < opts->width)
 		memset_pbuff(pbuff, ' ', opts->width - len);
 }
 
@@ -52,7 +42,7 @@ static void	parse_conversion(const char **format, t_popts *opts,
 		return ;
 	++*format;
 	if (ch == 's')
-		print_str(va_arg(*argptr, char *), opts, pbuff);
+		printf_str(va_arg(*argptr, char *), opts, pbuff);
 }
 
 static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
@@ -64,7 +54,7 @@ static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
 	{
 		putmem_pbuff(pbuff, format, ptr - format);
 		format = ++ptr;
-		parse_optionals(&format, &opts);
+		parse_optionals(&format, &opts, argptr);
 		parse_conversion(&format, &opts, pbuff, argptr);
 	}
 	putstr_pbuff(pbuff, format);
