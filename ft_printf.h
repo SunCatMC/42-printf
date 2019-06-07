@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 22:24:17 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 00:03:20 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,11 @@ enum			e_printf_flags {
 	F_SPECIAL = 1,
 	F_LEFT = 2,
 	F_PLUS = 4,
-	F_BLANKS = 8,
+	F_SPACE = 8,
 	F_ZERO = 16,
-	P_IS_PRECISE = 32
+	P_PRECISE = 32,
+	P_NEGATIVE = 64,
+	P_LARGE_X = 128
 };
 enum			e_printf_length {
 	L_CHAR,

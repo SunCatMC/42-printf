@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 20:28:22 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 22:23:55 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 00:03:11 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	printf_str(const char *str, t_popts *opts, t_pbuff *pbuff)
 
 	if (str == NULL)
 		str = null;
-	if (opts->flags & P_IS_PRECISE)
+	if (opts->flags & P_PRECISE)
 		ptr = (char *)ft_memchr(str, '\0', opts->precision);
 	else if ((ptr = (char *)ft_memchr(str, '\0', opts->width)) == NULL)
 		return (putstr_pbuff(pbuff, str));

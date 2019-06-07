@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/04 13:00:50 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 22:24:22 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 00:03:25 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 void		printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff)
 {
 	if (!(opts->flags & F_LEFT) && len < opts->width)
-		memset_pbuff(pbuff, (opts->flags & F_ZERO) ? '0' : ' ',
-			opts->width - len);
+		memset_pbuff(pbuff, ((opts->flags & F_ZERO)
+			&& !(opts->flags & P_PRECISE)) ? '0' : ' ', opts->width - len);
 }
 
 void		printf_width_post(int len, t_popts *opts, t_pbuff *pbuff)
@@ -104,7 +104,7 @@ void		parse_optionals(const char **fmt, t_popts *opts, va_list *argptr)
 					opts->precision = simple_atoi_skip(fmt);
 				else if (**fmt == '*')
 					opts->precision = va_arg(*argptr, int);
-				opts->flags = opts->flags | P_IS_PRECISE;
+				opts->flags = opts->flags | P_PRECISE;
 			}
 			else
 				break ;
