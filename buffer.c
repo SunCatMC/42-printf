@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:29:23 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 20:13:39 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/07 22:24:03 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	flush_pbuff(t_pbuff *pbuff)
 	pbuff->size = 0;
 }
 
-void	putchar_pbuff(t_pbuff *pbuff, const char ch)
+void	putchar_pbuff(t_pbuff *pbuff, char ch)
 {
 	pbuff->buff[pbuff->size] = ch;
 	pbuff->size++;

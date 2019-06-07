@@ -6,32 +6,12 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 20:31:38 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 20:13:46 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/07 22:24:10 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "ft_printf.h"
-
-static void	printf_str(const char *str, t_popts *opts, t_pbuff *pbuff)
-{
-	const char	null[] = "(null)";
-	char		*ptr;
-	int			len;
-
-	if (str == NULL)
-		str = null;
-	if (opts->flags & P_IS_PRECISE)
-		ptr = (char *)ft_memchr(str, '\0', opts->precision);
-	else if ((ptr = (char *)ft_memchr(str, '\0', opts->width)) == NULL)
-		return (putstr_pbuff(pbuff, str));
-	len = ptr ? ptr - str : opts->precision;
-	if (!(opts->flags & F_LEFT) && len < opts->width)
-		memset_pbuff(pbuff, ' ', opts->width - len);
-	putmem_pbuff(pbuff, str, len);
-	if ((opts->flags & F_LEFT) && len < opts->width)
-		memset_pbuff(pbuff, ' ', opts->width - len);
-}
 
 static void	parse_conversion(const char **format, t_popts *opts,
 						t_pbuff *pbuff, va_list *argptr)
@@ -40,8 +20,11 @@ static void	parse_conversion(const char **format, t_popts *opts,
 
 	if ((ch = **format) == '\0')
 		return ;
-	++*format;
-	if (ch == 's')
+	if (ch == 'c' && ++*format)
+		printf_char((char)va_arg(*argptr, int), opts, pbuff);
+	if (ch == '%' && ++*format)
+		printf_char('%', opts, pbuff);
+	if (ch == 's' && ++*format)
 		printf_str(va_arg(*argptr, char *), opts, pbuff);
 }
 

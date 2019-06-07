@@ -6,21 +6,20 @@
 #    By: htryndam <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/16 22:52:18 by htryndam          #+#    #+#              #
-#    Updated: 2019/06/07 17:06:26 by htryndam         ###   ########.fr        #
+#    Updated: 2019/06/07 21:19:25 by htryndam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
 
 IDIR = .
-SOURCES = ft_printf.c buffer.c optionals.c
+SOURCES = ft_printf.c buffer.c optionals.c basic_types.c
 
 SRC = $(SOURCES)
 
 LIBNAME = ft
 LIBDIR = libft
 LIBFILE = libft.a
-#LIBOBJ = ft_strlen.o ft_strchr.o
 LIBOBJ = *.o
 
 CFLAGS = -Wall -Werror -Wextra

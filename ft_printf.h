@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 20:13:55 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/07 22:24:17 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,23 +26,33 @@ enum			e_printf_flags {
 	F_PLUS = 4,
 	F_BLANKS = 8,
 	F_ZERO = 16,
-	L_CHAR = 32,
-	L_SHORT = 64,
-	L_LONG = 126,
-	L_LONGLONG = 256,
-	L_LONGDOUBLE = 512,
-	P_IS_PRECISE = 1024
+	P_IS_PRECISE = 32
+};
+enum			e_printf_length {
+	L_CHAR,
+	L_SHORT,
+	L_INT,
+	L_LONG,
+	L_LONGLONG,
+	L_LONGDOUBLE
 };
 typedef struct	s_popts {
 	int				param;
 	int				width;
 	unsigned short	flags;
+	int				length;
 	int				precision;
 }				t_popts;
 void			flush_pbuff(t_pbuff *pbuff);
+void			putchar_pbuff(t_pbuff *pbuff, char ch);
 void			putstr_pbuff(t_pbuff *pbuff, const char *str);
 void			memset_pbuff(t_pbuff *pbuff, char ch, int size);
 void			putmem_pbuff(t_pbuff *pbuff, const char *mem, int size);
 void			parse_optionals(const char **format,
 		t_popts *opts, va_list *argptr);
+void			printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff);
+void			printf_width_post(int len, t_popts *opts, t_pbuff *pbuff);
+
+void			printf_str(const char *str, t_popts *opts, t_pbuff *pbuff);
+void			printf_char(char ch, t_popts *opts, t_pbuff *pbuff);
 #endif
