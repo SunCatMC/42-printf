@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 00:03:20 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 17:32:22 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ enum			e_printf_flags {
 	F_ZERO = 16,
 	P_PRECISE = 32,
 	P_NEGATIVE = 64,
-	P_LARGE_X = 128
+	P_SIGNED = 128,
+	P_LARGE_X = 256
 };
 enum			e_printf_length {
 	L_CHAR,
@@ -50,11 +51,15 @@ void			putchar_pbuff(t_pbuff *pbuff, char ch);
 void			putstr_pbuff(t_pbuff *pbuff, const char *str);
 void			memset_pbuff(t_pbuff *pbuff, char ch, int size);
 void			putmem_pbuff(t_pbuff *pbuff, const char *mem, int size);
-void			parse_optionals(const char **format,
-		t_popts *opts, va_list *argptr);
+void			parse_optionals(const char **format, t_popts *opts,
+		va_list *argptr);
 void			printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff);
 void			printf_width_post(int len, t_popts *opts, t_pbuff *pbuff);
 
 void			printf_str(const char *str, t_popts *opts, t_pbuff *pbuff);
 void			printf_char(char ch, t_popts *opts, t_pbuff *pbuff);
+void	 		printf_int(unsigned long long num,
+		unsigned int base, t_popts *opts, t_pbuff *pbuff);
+void			printf_s_int(signed long long num, t_popts *opts,
+		t_pbuff *pbuff);
 #endif

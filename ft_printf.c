@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 20:31:38 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/07 22:24:10 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 17:32:14 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,52 @@
 static void	parse_conversion(const char **format, t_popts *opts,
 						t_pbuff *pbuff, va_list *argptr)
 {
-	char	ch;
+	char			ch;
+	unsigned int	base;
 
 	if ((ch = **format) == '\0')
 		return ;
-	if (ch == 'c' && ++*format)
+	else if (ch == 'c' && ++*format)
 		printf_char((char)va_arg(*argptr, int), opts, pbuff);
-	if (ch == '%' && ++*format)
+	else if (ch == '%' && ++*format)
 		printf_char('%', opts, pbuff);
-	if (ch == 's' && ++*format)
+	else if (ch == 's' && ++*format)
 		printf_str(va_arg(*argptr, char *), opts, pbuff);
+	else if ((ch == 'i' || ch == 'd') && ++*format)
+	{
+		if (opts->length == L_CHAR)
+			printf_s_int((signed char)va_arg(*argptr, int), opts, pbuff);
+		else if (opts->length == L_SHORT)
+			printf_s_int((signed short)va_arg(*argptr, int), opts, pbuff);
+		else if (opts->length == L_INT)
+			printf_s_int(va_arg(*argptr, int), opts, pbuff);
+		else if (opts->length == L_LONG)
+			printf_s_int(va_arg(*argptr, long), opts, pbuff);
+		else if (opts->length == L_LONGLONG)
+			printf_s_int(va_arg(*argptr, long long), opts, pbuff);
+	}
+	else if ((ch == 'u' || ch == 'o' || ch == 'x' || ch == 'X') && ++*format)
+	{
+		if (ch == 'u')
+			base = 10;
+		else if (ch == 'o')
+			base = 8;
+		else {
+			base = 16;
+			if (ch == 'X')
+				opts->flags = opts->flags | P_LARGE_X;
+		}
+		if (opts->length == L_CHAR)
+			printf_int((unsigned char)va_arg(*argptr, unsigned int), base, opts, pbuff);
+		else if (opts->length == L_SHORT)
+			printf_int((unsigned short)va_arg(*argptr, unsigned int), base, opts, pbuff);
+		else if (opts->length == L_INT)
+			printf_int(va_arg(*argptr, unsigned int), base, opts, pbuff);
+		else if (opts->length == L_LONG)
+			printf_int(va_arg(*argptr, unsigned long), base, opts, pbuff);
+		else if (opts->length == L_LONGLONG)
+			printf_int(va_arg(*argptr, unsigned long long), base, opts, pbuff);
+	}
 }
 
 static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)

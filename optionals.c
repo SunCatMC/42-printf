@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/04 13:00:50 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 00:03:25 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 17:32:32 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static int	parse_flags(char ch, t_popts *opts)
 	else if (ch == '+')
 		opts->flags = opts->flags | F_PLUS;
 	else if (ch == ' ')
-		opts->flags = opts->flags | F_BLANKS;
+		opts->flags = opts->flags | F_SPACE;
 	else if (ch == '0')
 		opts->flags = opts->flags | F_ZERO;
 	else
