@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/04 13:00:50 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 21:07:56 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/09 00:30:15 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 void		printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff)
 {
 	if (!(opts->flags & F_LEFT) && len < opts->width)
-		memset_pbuff(pbuff, ((opts->flags & F_ZERO)
-			&& opts->precision < 0) ? '0' : ' ', opts->width - len);
+		memset_pbuff(pbuff, opts->flags & F_ZERO
+			&& opts->precision < 0 ? '0' : ' ', opts->width - len);
 }
 
 void		printf_width_post(int len, t_popts *opts, t_pbuff *pbuff)

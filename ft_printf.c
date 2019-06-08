@@ -21,15 +21,15 @@ static void	parse_conversion(const char **format, t_popts *opts,
 
 	if ((ch = **format) == '\0')
 		return ;
-	else if (ch == 'c' && ++*format)
+	else if (ch == 'c')
 		printf_char((char)va_arg(*argptr, int), opts, pbuff);
-	else if (ch == '%' && ++*format)
+	else if (ch == '%')
 		printf_char('%', opts, pbuff);
-	else if (ch == 's' && ++*format)
+	else if (ch == 's')
 		printf_str(va_arg(*argptr, char *), opts, pbuff);
-	else if (ch == 'p' && ++*format)
+	else if (ch == 'p')
 		printf_ptr((unsigned long long)va_arg(*argptr, void *), opts, pbuff);
-	else if ((ch == 'i' || ch == 'd') && ++*format)
+	else if (ch == 'i' || ch == 'd')
 	{
 		if (opts->length == L_CHAR)
 			printf_s_int((signed char)va_arg(*argptr, int), opts, pbuff);
@@ -42,7 +42,7 @@ static void	parse_conversion(const char **format, t_popts *opts,
 		else if (opts->length == L_LONGLONG)
 			printf_s_int(va_arg(*argptr, long long), opts, pbuff);
 	}
-	else if ((ch == 'u' || ch == 'o' || ch == 'x' || ch == 'X') && ++*format)
+	else if (ch == 'u' || ch == 'o' || ch == 'x' || ch == 'X')
 	{
 		if (ch == 'u')
 			base = 10;
@@ -64,6 +64,7 @@ static void	parse_conversion(const char **format, t_popts *opts,
 		else if (opts->length == L_LONGLONG)
 			printf_int(va_arg(*argptr, unsigned long long), base, opts, pbuff);
 	}
+		++*format;
 }
 
 static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
