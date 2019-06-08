@@ -6,17 +6,38 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 22:28:53 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 17:32:27 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 21:07:51 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-/*
-static void	printf_digit()
-{
 
+static void	printf_digit(unsigned int digit, t_popts *opts, t_pbuff *pbuff)
+{
+	if (digit < 10)
+		putchar_pbuff(pbuff, digit + '0');
+	else if (opts->flags & P_LARGE_X)
+		putchar_pbuff(pbuff, digit - 10 + 'A');
+	else
+		putchar_pbuff(pbuff, digit - 10 + 'a');
 }
-*/
+
+static void zero_case(unsigned int base, t_popts *opts, t_pbuff *pbuff)
+{
+	int len;
+
+	len = 0;
+	if (opts->width != 0)
+	{
+		len = base == 8 && (opts->flags & F_SPECIAL) ? 0 : 1;
+		printf_width_pre(len, opts, pbuff);
+		putchar_pbuff(pbuff, base == 8 && (opts->flags & F_SPECIAL) ? 0 : ' ');
+		printf_width_post(len, opts, pbuff);
+	}
+	else if (base == 8 && (opts->flags & F_SPECIAL))
+		putchar_pbuff(pbuff, '0');
+}
+
 void		printf_int(unsigned long long num, unsigned int base,
 		t_popts *opts, t_pbuff *pbuff)
 {
@@ -25,6 +46,8 @@ void		printf_int(unsigned long long num, unsigned int base,
 	int					length;
 	int					len;
 
+	if (opts->precision == 0 && num == 0)
+		return (zero_case(base, opts, pbuff));
 	num_len = 1;
 	len = 1;
 	while (num / num_len >= base)
@@ -33,17 +56,17 @@ void		printf_int(unsigned long long num, unsigned int base,
 		++len;
 	}
 	precision = len;
-	if (base == 8 && (opts->flags & F_SPECIAL))
+	if (base == 8 && (opts->flags & F_SPECIAL) && num > 0)
 		++precision;
-	if ((opts->flags & P_PRECISE) && precision < opts->precision)
+	if (opts->precision >= 0 && precision < opts->precision)
 		precision = opts->precision;
 	length = precision;
 	if ((opts->flags & P_SIGNED)
 			&& (opts->flags & (P_NEGATIVE | F_SPACE | F_PLUS)))
 		++length;
-	if (base == 16 && (opts->flags & F_SPECIAL))
+	if (base == 16 && (opts->flags & F_SPECIAL) && num > 0)
 		length += 2;
-	if (opts->flags & P_SIGNED)
+	if ((opts->flags & P_SIGNED) && (opts->flags & F_ZERO))
 	{
 		if (opts->flags & P_NEGATIVE)
 			putchar_pbuff(pbuff, '-');
@@ -52,18 +75,29 @@ void		printf_int(unsigned long long num, unsigned int base,
 		else if (opts->flags & F_SPACE)
 			putchar_pbuff(pbuff, ' ');
 	}
-	printf_width_pre(length, opts, pbuff);
-	if (base == 16 && (opts->flags & F_SPECIAL))
+	if (base == 16 && (opts->flags & F_ZERO) && (opts->flags & F_SPECIAL) && num > 0)
 		putmem_pbuff(pbuff, (opts->flags & P_LARGE_X) ? "0X" : "0x", 2);
+	printf_width_pre(length, opts, pbuff);
+	if (base == 16 && !(opts->flags & F_ZERO) && (opts->flags & F_SPECIAL) && num > 0)
+		putmem_pbuff(pbuff, (opts->flags & P_LARGE_X) ? "0X" : "0x", 2);
+	if ((opts->flags & P_SIGNED) && !(opts->flags & F_ZERO))
+	{
+		if (opts->flags & P_NEGATIVE)
+			putchar_pbuff(pbuff, '-');
+		else if (opts->flags & F_PLUS)
+			putchar_pbuff(pbuff, '+');
+		else if (opts->flags & F_SPACE)
+			putchar_pbuff(pbuff, ' ');
+	}
 	if (len < precision)
 		memset_pbuff(pbuff, '0', precision - len);
 	while (num_len >= base)
 	{
-		putchar_pbuff(pbuff, num / num_len + '0');
+		printf_digit(num / num_len, opts, pbuff);
 		num %= num_len;
 		num_len /= base;
 	}
-	putchar_pbuff(pbuff, num + '0');
+	printf_digit(num, opts, pbuff);
 	printf_width_post(length, opts, pbuff);
 }
 

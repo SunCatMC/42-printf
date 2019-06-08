@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 17:32:22 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 21:07:45 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,9 @@ enum			e_printf_flags {
 	F_PLUS = 4,
 	F_SPACE = 8,
 	F_ZERO = 16,
-	P_PRECISE = 32,
-	P_NEGATIVE = 64,
-	P_SIGNED = 128,
-	P_LARGE_X = 256
+	P_NEGATIVE = 32,
+	P_SIGNED = 64,
+	P_LARGE_X = 128
 };
 enum			e_printf_length {
 	L_CHAR,
@@ -56,6 +55,8 @@ void			parse_optionals(const char **format, t_popts *opts,
 void			printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff);
 void			printf_width_post(int len, t_popts *opts, t_pbuff *pbuff);
 
+void			printf_ptr(unsigned long long ptr, t_popts *opts,
+		t_pbuff *pbuff);
 void			printf_str(const char *str, t_popts *opts, t_pbuff *pbuff);
 void			printf_char(char ch, t_popts *opts, t_pbuff *pbuff);
 void	 		printf_int(unsigned long long num,
