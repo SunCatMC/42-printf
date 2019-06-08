@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 20:28:22 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 21:07:31 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 21:28:44 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,6 @@ void	printf_str(const char *str, t_popts *opts, t_pbuff *pbuff)
 
 void	printf_ptr(unsigned long long ptr, t_popts *opts, t_pbuff *pbuff)
 {
-	opts->flags = F_SPECIAL;
+	opts->flags = F_SPECIAL | P_PTR;
 	printf_int(ptr, 16, opts, pbuff);
 }

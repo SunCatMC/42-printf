@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 22:28:53 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 21:07:51 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 21:28:58 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ static void zero_case(unsigned int base, t_popts *opts, t_pbuff *pbuff)
 	}
 	else if (base == 8 && (opts->flags & F_SPECIAL))
 		putchar_pbuff(pbuff, '0');
+	else if (opts->flags & P_PTR)
+		putmem_pbuff(pbuff, "0x", 2);
 }
 
 void		printf_int(unsigned long long num, unsigned int base,
@@ -64,7 +66,7 @@ void		printf_int(unsigned long long num, unsigned int base,
 	if ((opts->flags & P_SIGNED)
 			&& (opts->flags & (P_NEGATIVE | F_SPACE | F_PLUS)))
 		++length;
-	if (base == 16 && (opts->flags & F_SPECIAL) && num > 0)
+	if (base == 16 && (opts->flags & F_SPECIAL) && (num > 0 || opts->flags & P_PTR))
 		length += 2;
 	if ((opts->flags & P_SIGNED) && (opts->flags & F_ZERO))
 	{
@@ -75,10 +77,10 @@ void		printf_int(unsigned long long num, unsigned int base,
 		else if (opts->flags & F_SPACE)
 			putchar_pbuff(pbuff, ' ');
 	}
-	if (base == 16 && (opts->flags & F_ZERO) && (opts->flags & F_SPECIAL) && num > 0)
+	if (base == 16 && (opts->flags & F_ZERO) && (opts->flags & F_SPECIAL) && (num > 0 || opts->flags & P_PTR))
 		putmem_pbuff(pbuff, (opts->flags & P_LARGE_X) ? "0X" : "0x", 2);
 	printf_width_pre(length, opts, pbuff);
-	if (base == 16 && !(opts->flags & F_ZERO) && (opts->flags & F_SPECIAL) && num > 0)
+	if (base == 16 && !(opts->flags & F_ZERO) && (opts->flags & F_SPECIAL) && (num > 0 || opts->flags & P_PTR))
 		putmem_pbuff(pbuff, (opts->flags & P_LARGE_X) ? "0X" : "0x", 2);
 	if ((opts->flags & P_SIGNED) && !(opts->flags & F_ZERO))
 	{

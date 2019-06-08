@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 20:31:38 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 21:07:42 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/08 21:28:50 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static void	parse_conversion(const char **format, t_popts *opts,
 	else if (ch == 's' && ++*format)
 		printf_str(va_arg(*argptr, char *), opts, pbuff);
 	else if (ch == 'p' && ++*format)
-		printf_str(va_arg(*argptr, void *), opts, pbuff);
+		printf_ptr((unsigned long long)va_arg(*argptr, void *), opts, pbuff);
 	else if ((ch == 'i' || ch == 'd') && ++*format)
 	{
 		if (opts->length == L_CHAR)
