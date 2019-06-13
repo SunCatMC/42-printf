@@ -52,6 +52,14 @@ typedef struct	s_pint {
 	int					precision;
 	int					length;
 }				t_pint;
+typedef union	u_pdouble {
+	double 		num;
+	struct		{
+		unsigned long long fract:52;
+		unsigned long long exp:11;
+		unsigned long long sign:1;
+	};
+}				t_pdouble;
 void			flush_pbuff(t_pbuff *pbuff);
 void			putchar_pbuff(t_pbuff *pbuff, char ch);
 void			putstr_pbuff(t_pbuff *pbuff, const char *str);
