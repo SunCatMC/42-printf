@@ -46,6 +46,12 @@ typedef struct	s_popts {
 	int				length;
 	int				precision;
 }				t_popts;
+typedef struct	s_pint {
+	int					len;
+	unsigned long long	num_len;
+	int					precision;
+	int					length;
+}				t_pint;
 void			flush_pbuff(t_pbuff *pbuff);
 void			putchar_pbuff(t_pbuff *pbuff, char ch);
 void			putstr_pbuff(t_pbuff *pbuff, const char *str);
@@ -55,13 +61,12 @@ void			parse_optionals(const char **format, t_popts *opts,
 		va_list *argptr);
 void			printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff);
 void			printf_width_post(int len, t_popts *opts, t_pbuff *pbuff);
-
 void			printf_ptr(unsigned long long ptr, t_popts *opts,
 		t_pbuff *pbuff);
 void			printf_str(const char *str, t_popts *opts, t_pbuff *pbuff);
 void			printf_char(char ch, t_popts *opts, t_pbuff *pbuff);
-void	 		printf_int(unsigned long long num,
-		unsigned int base, t_popts *opts, t_pbuff *pbuff);
+void			printf_int(unsigned long long num, unsigned int base,
+		t_popts *opts, t_pbuff *pbuff);
 void			printf_s_int(signed long long num, t_popts *opts,
 		t_pbuff *pbuff);
 #endif

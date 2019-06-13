@@ -43,3 +43,15 @@ void	printf_ptr(unsigned long long ptr, t_popts *opts, t_pbuff *pbuff)
 	opts->flags = (opts->flags & F_LEFT) | F_SPECIAL | P_PTR;
 	printf_int(ptr, 16, opts, pbuff);
 }
+
+void	printf_s_int(signed long long num, t_popts *opts, t_pbuff *pbuff)
+{
+	opts->flags = opts->flags | P_SIGNED;
+	if (num < 0)
+	{
+		opts->flags = opts->flags | P_NEGATIVE;
+		printf_int(-num, 10, opts, pbuff);
+	}
+	else
+		printf_int(num, 10, opts, pbuff);
+}

@@ -50,7 +50,8 @@ static void	parse_conversion(const char **format, t_popts *opts,
 			base = 10;
 		else if (ch == 'o')
 			base = 8;
-		else {
+		else
+		{
 			base = 16;
 			if (ch == 'X')
 				opts->flags = opts->flags | P_LARGE_X;
@@ -66,7 +67,7 @@ static void	parse_conversion(const char **format, t_popts *opts,
 		else if (opts->length == L_LONGLONG)
 			printf_int(va_arg(*argptr, unsigned long long), base, opts, pbuff);
 	}
-		++*format;
+	++*format;
 }
 
 static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
