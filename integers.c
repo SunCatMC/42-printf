@@ -68,7 +68,11 @@ void		printf_int(unsigned long long num, unsigned int base,
 		++length;
 	if (base == 16 && (opts->flags & F_SPECIAL) && (num > 0 || opts->flags & P_PTR))
 		length += 2;
-	if ((opts->flags & P_SIGNED) && (opts->flags & F_ZERO))
+	if (base == 2 && opts->flags & F_SPECIAL)
+		++length;
+	if (!(opts->flags & F_ZERO))
+		printf_width_pre(length, opts, pbuff);
+	if (opts->flags & P_SIGNED)
 	{
 		if (opts->flags & P_NEGATIVE)
 			putchar_pbuff(pbuff, '-');
@@ -77,20 +81,12 @@ void		printf_int(unsigned long long num, unsigned int base,
 		else if (opts->flags & F_SPACE)
 			putchar_pbuff(pbuff, ' ');
 	}
-	if (base == 16 && (opts->flags & F_ZERO) && (opts->flags & F_SPECIAL) && (num > 0 || opts->flags & P_PTR))
+	if (base == 16 && (opts->flags & F_SPECIAL) && (num > 0 || opts->flags & P_PTR))
 		putmem_pbuff(pbuff, (opts->flags & P_LARGE_X) ? "0X" : "0x", 2);
-	printf_width_pre(length, opts, pbuff);
-	if (base == 16 && !(opts->flags & F_ZERO) && (opts->flags & F_SPECIAL) && (num > 0 || opts->flags & P_PTR))
-		putmem_pbuff(pbuff, (opts->flags & P_LARGE_X) ? "0X" : "0x", 2);
-	if ((opts->flags & P_SIGNED) && !(opts->flags & F_ZERO))
-	{
-		if (opts->flags & P_NEGATIVE)
-			putchar_pbuff(pbuff, '-');
-		else if (opts->flags & F_PLUS)
-			putchar_pbuff(pbuff, '+');
-		else if (opts->flags & F_SPACE)
-			putchar_pbuff(pbuff, ' ');
-	}
+	if (base == 2 && opts->flags & F_SPECIAL)
+		putchar_pbuff(pbuff, 'b');
+	if (opts->flags & F_ZERO)
+		printf_width_pre(length, opts, pbuff);
 	if (len < precision)
 		memset_pbuff(pbuff, '0', precision - len);
 	while (num_len >= base)

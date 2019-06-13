@@ -29,6 +29,8 @@ static void	parse_conversion(const char **format, t_popts *opts,
 		printf_str(va_arg(*argptr, char *), opts, pbuff);
 	else if (ch == 'p')
 		printf_ptr((unsigned long long)va_arg(*argptr, void *), opts, pbuff);
+	else if (ch == 'b')
+		printf_int(va_arg(*argptr, long long), 2, opts, pbuff);
 	else if (ch == 'i' || ch == 'd')
 	{
 		if (opts->length == L_CHAR)
