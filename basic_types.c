@@ -46,7 +46,7 @@ void	printf_ptr(unsigned long long ptr, t_popts *opts, t_pbuff *pbuff)
 
 void	printf_s_int(signed long long num, t_popts *opts, t_pbuff *pbuff)
 {
-	opts->flags = opts->flags | P_SIGNED;
+	opts->flags = opts->flags | P_SIGNED | P_NUM;
 	if (num < 0)
 	{
 		opts->flags = opts->flags | P_NEGATIVE;

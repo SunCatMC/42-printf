@@ -12,7 +12,7 @@
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
-# define PRINTF_BUFF_SIZE 8
+# define PRINTF_BUFF_SIZE 4096
 # include <stdarg.h>
 
 typedef struct	s_pbuff	{
@@ -29,7 +29,8 @@ enum			e_printf_flags {
 	P_NEGATIVE = 32,
 	P_SIGNED = 64,
 	P_LARGE_X = 128,
-	P_PTR = 256
+	P_NUM = 256,
+	P_PTR = 512
 };
 enum			e_printf_length {
 	L_CHAR,
@@ -52,14 +53,24 @@ typedef struct	s_pint {
 	int					precision;
 	int					length;
 }				t_pint;
-typedef union	u_pdouble {
-	double 		num;
-	struct		{
-		unsigned long long fract:52;
-		unsigned long long exp:11;
-		unsigned long long sign:1;
-	};
-}				t_pdouble;
+typedef struct	s_value_p {
+	unsigned long long	fract:63;
+	unsigned int		int_bit:1;
+}				t_value_p;
+typedef union	u_value {
+	unsigned long long	whole:64;
+	t_value_p			parts;
+}				t_value;
+typedef struct	s_num_bin {
+	t_value				value;
+	unsigned int		exp:15;
+	unsigned int		sign:1;
+}				t_num_bin;
+typedef union	u_ldbl {
+	long double		num;
+	t_num_bin		bin;
+}				t_ldbl;
+
 void			flush_pbuff(t_pbuff *pbuff);
 void			putchar_pbuff(t_pbuff *pbuff, char ch);
 void			putstr_pbuff(t_pbuff *pbuff, const char *str);

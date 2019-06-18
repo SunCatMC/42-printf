@@ -16,8 +16,8 @@
 void		printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff)
 {
 	if (!(opts->flags & F_LEFT) && len < opts->width)
-		memset_pbuff(pbuff, opts->flags & F_ZERO
-			&& opts->precision < 0 ? '0' : ' ', opts->width - len);
+		memset_pbuff(pbuff, opts->flags & F_ZERO && (!(opts->flags & P_NUM)
+			|| opts->precision < 0) ? '0' : ' ', opts->width - len);
 }
 
 void		printf_width_post(int len, t_popts *opts, t_pbuff *pbuff)

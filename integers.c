@@ -61,11 +61,9 @@ static t_pint	init_lens(unsigned long long num, unsigned int base,
 	if ((opts->flags & P_SIGNED)
 			&& (opts->flags & (P_NEGATIVE | F_SPACE | F_PLUS)))
 		++pint.length;
-	if (base == 16 && (opts->flags & F_SPECIAL)
+	if ((base == 16 || base == 2) && (opts->flags & F_SPECIAL)
 			&& (num > 0 || opts->flags & P_PTR))
 		pint.length += 2;
-	if (base == 2 && opts->flags & F_SPECIAL)
-		++pint.length;
 	return (pint);
 }
 
@@ -85,7 +83,7 @@ static void		put_special(unsigned long long num, unsigned int base,
 				&& (num > 0 || opts->flags & P_PTR))
 		putmem_pbuff(pbuff, (opts->flags & P_LARGE_X) ? "0X" : "0x", 2);
 	if (base == 2 && opts->flags & F_SPECIAL)
-		putchar_pbuff(pbuff, 'b');
+		putmem_pbuff(pbuff, "0b", 2);
 }
 
 void			printf_int(unsigned long long num, unsigned int base,

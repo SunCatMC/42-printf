@@ -13,11 +13,41 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-static void	parse_conversion(const char **format, t_popts *opts,
-						t_pbuff *pbuff, va_list *argptr)
+static long long	get_s_num(t_popts *opts, va_list *argptr)
 {
-	char			ch;
-	unsigned int	base;
+	if (opts->length == L_CHAR)
+		return((signed char)va_arg(*argptr, int));
+	if (opts->length == L_SHORT)
+		return((signed short)va_arg(*argptr, int));
+	if (opts->length == L_INT)
+		return(va_arg(*argptr, int));
+	if (opts->length == L_LONG)
+		return(va_arg(*argptr, long));
+	if (opts->length == L_LONGLONG)
+		return(va_arg(*argptr, long long));
+	return (0);
+}
+
+static unsigned long long	get_u_num(t_popts *opts, va_list *argptr)
+{
+	if (opts->length == L_CHAR)
+		return((unsigned char)va_arg(*argptr, int));
+	if (opts->length == L_SHORT)
+		return((unsigned short)va_arg(*argptr, int));
+	if (opts->length == L_INT)
+		return(va_arg(*argptr, unsigned int));
+	if (opts->length == L_LONG)
+		return(va_arg(*argptr, unsigned long));
+	if (opts->length == L_LONGLONG)
+		return(va_arg(*argptr, unsigned long long));
+	return (0);
+}
+
+static void					parse_conversion(const char **format, t_popts *opts,
+				t_pbuff *pbuff, va_list *argptr)
+{
+	char				ch;
+	unsigned int		base;
 
 	if ((ch = **format) == '\0')
 		return ;
@@ -29,48 +59,30 @@ static void	parse_conversion(const char **format, t_popts *opts,
 		printf_str(va_arg(*argptr, char *), opts, pbuff);
 	else if (ch == 'p')
 		printf_ptr((unsigned long long)va_arg(*argptr, void *), opts, pbuff);
-	else if (ch == 'b')
-		printf_int(va_arg(*argptr, long long), 2, opts, pbuff);
 	else if (ch == 'i' || ch == 'd')
+		printf_s_int(get_s_num(opts, argptr), opts, pbuff);
+	else if (ch == 'b' || ch == 'u' || ch == 'o' || ch == 'x' || ch == 'X')
 	{
-		if (opts->length == L_CHAR)
-			printf_s_int((signed char)va_arg(*argptr, int), opts, pbuff);
-		else if (opts->length == L_SHORT)
-			printf_s_int((signed short)va_arg(*argptr, int), opts, pbuff);
-		else if (opts->length == L_INT)
-			printf_s_int(va_arg(*argptr, int), opts, pbuff);
-		else if (opts->length == L_LONG)
-			printf_s_int(va_arg(*argptr, long), opts, pbuff);
-		else if (opts->length == L_LONGLONG)
-			printf_s_int(va_arg(*argptr, long long), opts, pbuff);
-	}
-	else if (ch == 'u' || ch == 'o' || ch == 'x' || ch == 'X')
-	{
+		opts->flags = opts->flags | P_NUM;
 		if (ch == 'u')
 			base = 10;
 		else if (ch == 'o')
 			base = 8;
+		else if (ch == 'b')
+			base = 2;
 		else
 		{
 			base = 16;
 			if (ch == 'X')
 				opts->flags = opts->flags | P_LARGE_X;
 		}
-		if (opts->length == L_CHAR)
-			printf_int((unsigned char)va_arg(*argptr, unsigned int), base, opts, pbuff);
-		else if (opts->length == L_SHORT)
-			printf_int((unsigned short)va_arg(*argptr, unsigned int), base, opts, pbuff);
-		else if (opts->length == L_INT)
-			printf_int(va_arg(*argptr, unsigned int), base, opts, pbuff);
-		else if (opts->length == L_LONG)
-			printf_int(va_arg(*argptr, unsigned long), base, opts, pbuff);
-		else if (opts->length == L_LONGLONG)
-			printf_int(va_arg(*argptr, unsigned long long), base, opts, pbuff);
+		printf_int(get_u_num(opts, argptr), base, opts, pbuff);
 	}
 	++*format;
 }
 
-static void	printf_base(const char *format, t_pbuff *pbuff, va_list *argptr)
+static void						printf_base(const char *format, t_pbuff *pbuff,
+				va_list *argptr)
 {
 	char	*ptr;
 	t_popts	opts;
