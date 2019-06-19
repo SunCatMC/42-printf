@@ -59,6 +59,8 @@ static int	parse_length(char ch, t_popts *opts)
 		else if (opts->length != L_LONGLONG)
 			opts->length = L_LONG;
 	}
+	else if (ch == 'L')
+		opts->length = L_LONGDOUBLE;
 	else
 		res = 0;
 	return (res);

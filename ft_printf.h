@@ -28,9 +28,9 @@ enum			e_printf_flags {
 	F_ZERO = 16,
 	P_NEGATIVE = 32,
 	P_SIGNED = 64,
-	P_LARGE_X = 128,
+	P_LARGE = 128,
 	P_NUM = 256,
-	P_PTR = 512
+	P_PTR = 512,
 };
 enum			e_printf_length {
 	L_CHAR,
@@ -53,23 +53,19 @@ typedef struct	s_pint {
 	int					precision;
 	int					length;
 }				t_pint;
-typedef struct	s_value_p {
-	unsigned long long	fract:63;
-	unsigned int		int_bit:1;
-}				t_value_p;
-typedef union	u_value {
-	unsigned long long	whole:64;
-	t_value_p			parts;
-}				t_value;
+
 typedef struct	s_num_bin {
-	t_value				value;
-	unsigned int		exp:15;
-	unsigned int		sign:1;
+	unsigned long long	fract:64;
+	unsigned short		exp:15;
+	unsigned char		sign:1;
 }				t_num_bin;
 typedef union	u_ldbl {
 	long double		num;
 	t_num_bin		bin;
 }				t_ldbl;
+
+# define EXP_MAX 32767
+# define EXP_BIAS 16382
 
 void			flush_pbuff(t_pbuff *pbuff);
 void			putchar_pbuff(t_pbuff *pbuff, char ch);
@@ -88,4 +84,5 @@ void			printf_int(unsigned long long num, unsigned int base,
 		t_popts *opts, t_pbuff *pbuff);
 void			printf_s_int(signed long long num, t_popts *opts,
 		t_pbuff *pbuff);
+void			printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff);
 #endif

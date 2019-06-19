@@ -16,7 +16,7 @@ static void		printf_digit(unsigned int digit, t_popts *opts, t_pbuff *pbuff)
 {
 	if (digit < 10)
 		putchar_pbuff(pbuff, digit + '0');
-	else if (opts->flags & P_LARGE_X)
+	else if (opts->flags & P_LARGE)
 		putchar_pbuff(pbuff, digit - 10 + 'A');
 	else
 		putchar_pbuff(pbuff, digit - 10 + 'a');
@@ -81,7 +81,7 @@ static void		put_special(unsigned long long num, unsigned int base,
 	}
 	if (base == 16 && (opts->flags & F_SPECIAL)
 				&& (num > 0 || opts->flags & P_PTR))
-		putmem_pbuff(pbuff, (opts->flags & P_LARGE_X) ? "0X" : "0x", 2);
+		putmem_pbuff(pbuff, (opts->flags & P_LARGE) ? "0X" : "0x", 2);
 	if (base == 2 && opts->flags & F_SPECIAL)
 		putmem_pbuff(pbuff, "0b", 2);
 }
