@@ -39,15 +39,26 @@ static void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_str(buff, opts, pbuff);
 }
 
+static void	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
+{
+	unsigned long long int_part;
+
+	if (ldbl.bin.exp < EXP_BIAS + 64)
+		int_part = ldbl.bin.fract >> (64 - (ldbl.bin.exp - EXP_BIAS));
+	else
+		int_part = ldbl.bin.fract;
+}
+
 void		printf_f_ldbl(long double num, t_popts *opts,
 		t_pbuff *pbuff)
 {
-	t_ldbl				ldbl;
+	t_ldbl	ldbl;
 
 	ldbl.num = num;
 	if (ldbl.bin.exp == EXP_MAX)
 		return (printf_max_exp(&ldbl, opts, pbuff));
 	if (opts->precision < 0)
 		opts->precision = 6;
-
+	if (ldbl.bin.exp > EXP_BIAS)
+		printf_f_int(&ldbl, opts, pbuff);
 }
