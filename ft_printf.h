@@ -73,8 +73,9 @@ typedef struct	s_numlist {
 	struct s_numlist	*prev;
 }				t_numlist;
 typedef struct	s_bignum {
-	t_numlist	*least;
-	t_numlist	*most;
+	t_numlist		*least;
+	t_numlist		*most;
+	unsigned int
 }				t_bignum;
 
 # define BN_NUM_MAX	999999999999999999

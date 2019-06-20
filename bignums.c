@@ -55,9 +55,16 @@ static void	malloc_fail(t_numlist *lst)
 
 void		init_bignum(t_bignum *bignum, unsigned long long num)
 {
+	unsigned long long temp;
+
+	temp = num >> 60;
+	num <<= 4;
+	num >>= 4;
 	if (bignum->least == NULL)
 	{
 		if ((bignum->least = new_numlst(num)) == NULL)
+			malloc_fail(NULL);
+		if ((bignum->least->next = new_numlst(temp)) == NULL)
 			malloc_fail(NULL);
 	}
 	else
@@ -65,10 +72,11 @@ void		init_bignum(t_bignum *bignum, unsigned long long num)
 	bignum->most = bignum->least;
 }
 
-void		lshift_bignum(t_bignum *bignum)
+void		lshift_bignum(t_bignum *bignum, unsigned int count)
 {
-	t_numlist *cur;
+	t_numlist	*cur;
+	int			i;
 
-	cur = bignum->
+	cur = bignum->most;
+	i = 0;
 	while ()
-}
