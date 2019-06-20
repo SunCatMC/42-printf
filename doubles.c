@@ -43,10 +43,12 @@ static void	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	unsigned long long int_part;
 
-	if (ldbl.bin.exp < EXP_BIAS + 64)
-		int_part = ldbl.bin.fract >> (64 - (ldbl.bin.exp - EXP_BIAS));
+	(void)opts;
+	(void)pbuff;
+	if (ldbl->bin.exp < EXP_BIAS + 64)
+		int_part = ldbl->bin.fract >> (64 - (ldbl->bin.exp - EXP_BIAS));
 	else
-		int_part = ldbl.bin.fract;
+		int_part = ldbl->bin.fract;
 }
 
 void		printf_f_ldbl(long double num, t_popts *opts,

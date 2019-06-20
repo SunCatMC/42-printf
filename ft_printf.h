@@ -67,6 +67,18 @@ typedef union	u_ldbl {
 # define EXP_MAX 32767
 # define EXP_BIAS 16382
 
+typedef struct	s_numlist {
+	unsigned long long	num;
+	struct s_numlist	*next;
+	struct s_numlist	*prev;
+}				t_numlist;
+typedef struct	s_bignum {
+	t_numlist	*least;
+	t_numlist	*most;
+}				t_bignum;
+
+# define BN_NUM_MAX	999999999999999999
+
 void			flush_pbuff(t_pbuff *pbuff);
 void			putchar_pbuff(t_pbuff *pbuff, char ch);
 void			putstr_pbuff(t_pbuff *pbuff, const char *str);
