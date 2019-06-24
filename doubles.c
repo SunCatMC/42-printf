@@ -41,14 +41,19 @@ static void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 
 static void	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
-	unsigned long long int_part;
+	unsigned long long	int_part;
+	unsigned short		exp;
 
 	(void)opts;
 	(void)pbuff;
-	if (ldbl->bin.exp < EXP_BIAS + 64)
-		int_part = ldbl->bin.fract >> (64 - (ldbl->bin.exp - EXP_BIAS));
+	exp = ldbl->bin.exp - EXP_BIAS;
+	if (exp < 64)
+		int_part = ldbl->bin.fract >> (64 - exp));
 	else
 		int_part = ldbl->bin.fract;
+	init_bignum(&(pbuff.bignum), int_part);
+	while (exp-- > 64)
+		bignum_mul_digit(&(pbuff.bignum), 2);
 }
 
 void		printf_f_ldbl(long double num, t_popts *opts,

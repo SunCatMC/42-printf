@@ -16,9 +16,10 @@
 # include <stdarg.h>
 
 typedef struct	s_pbuff	{
-	char	buff[PRINTF_BUFF_SIZE];
-	int		size;
-	int		printed;
+	char		buff[PRINTF_BUFF_SIZE];
+	int			size;
+	int			printed;
+	t_bignum	bignum;
 }				t_pbuff;
 enum			e_printf_flags {
 	F_SPECIAL = 1,
@@ -73,12 +74,12 @@ typedef struct	s_numlist {
 	struct s_numlist	*prev;
 }				t_numlist;
 typedef struct	s_bignum {
-	t_numlist		*least;
-	t_numlist		*most;
-	unsigned int
+	t_numlist	*least;
+	t_numlist	*most;
 }				t_bignum;
 
-# define BN_NUM_MAX	999999999999999999
+# define BN_NUM_MAX		999999999999999999
+# define BN_NUM_LEN_LIM	1000000000000000000
 
 void			flush_pbuff(t_pbuff *pbuff);
 void			putchar_pbuff(t_pbuff *pbuff, char ch);

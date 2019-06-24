@@ -33,18 +33,29 @@ t_numlist	*new_numlst(unsigned long long num)
 		return (NULL);
 	lst->num = num;
 	lst->next = NULL;
-	lst->prev = NULL;
 	return (lst);
 }
 
-t_numlist	*insert_numlst(t_numlist *cur, t_numlist *next, t_numlist *prev)
+void		add_numlst(t_bignum *bignum, unsigned long long num)
 {
-	if (next != NULL)
-		next->prev = cur;
-	if (prev != NULL)
-		prev->next = cur;
-	cur->prev = prev;
-	cur->next = next;
+	if (bignum->least == NULL)
+	{
+		if ((bignum->least = new_numlst(num)) == NULL)
+			exit(0);
+		bignum->most = bignum->least;
+	}
+	if (bignum->most->next == NULL)
+	{
+		if ((bignum->most->next = new_numlst(num)) == NULL)
+			malloc_fail(bignum->least);
+		bignum->most->next->prev = bignum->most;
+		bignum->most = bignum->most->next;
+	}
+	else
+	{
+		bignum->most = bignum->most->next;
+		bignum->most->num = num;
+	}
 }
 
 static void	malloc_fail(t_numlist *lst)
@@ -58,25 +69,38 @@ void		init_bignum(t_bignum *bignum, unsigned long long num)
 	unsigned long long temp;
 
 	temp = num >> 60;
-	num <<= 4;
-	num >>= 4;
-	if (bignum->least == NULL)
+	num &= ~(temp << 60);
+	if (num > BN_NUM_MAX)
 	{
-		if ((bignum->least = new_numlst(num)) == NULL)
-			malloc_fail(NULL);
-		if ((bignum->least->next = new_numlst(temp)) == NULL)
-			malloc_fail(NULL);
+		temp = (temp << 1) | (num == 1 << 59 ? 1 : 0);
+		num &= ~(1 << 59);
 	}
-	else
-		bignum->least->num = num;
-	bignum->most = bignum->least;
+	add_numlst(bignum, num);
+	if (temp > 0)
+		add_numlst(bignum, temp);
 }
 
-void		lshift_bignum(t_bignum *bignum, unsigned int count)
+void		bignum_mul_digit(t_bignum *bignum, unsigned int num)
 {
-	t_numlist	*cur;
-	int			i;
+	t_numlist			*cur;
+	unsigned long long	carry;
 
-	cur = bignum->most;
-	i = 0;
-	while ()
+	cur = bignum->least;
+	carry = 0;
+	while (1)
+	{
+		cur->num = cur->num * num + carry;
+		if (cur->num > BN_NUM_MAX)
+		{
+			carry = cur->num / BN_NUM_LEN_LIM;
+			cur->num %= BN_NUM_LEN_LIM;
+		}
+		else
+			carry = 0;
+		if (cur == bignum->most)
+			break ;
+		cur = cur->next;
+	}
+	if (carry != 0)
+		add_numlst(bignum, carry);
+}
