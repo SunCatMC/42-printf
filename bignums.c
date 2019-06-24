@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/24 23:38:51 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/24 23:56:03 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ t_numlist	*new_numlst(unsigned long long num)
 		return (NULL);
 	lst->num = num;
 	lst->next = NULL;
+	lst->prev = NULL;
 	return (lst);
 }
 
