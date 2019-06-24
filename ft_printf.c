@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 20:31:38 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/08 21:28:50 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/24 23:39:04 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,5 +119,7 @@ int			ft_printf(const char *format, ...)
 	printf_base(format, &pbuff, &argptr);
 	va_end(argptr);
 	flush_pbuff(&pbuff);
+	if (pbuff.bignum.least != NULL)
+		free_numlst(pbuff.bignum.least);
 	return (pbuff.printed);
 }

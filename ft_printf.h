@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/09 00:30:04 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/24 23:39:09 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,6 @@
 # define PRINTF_BUFF_SIZE 4096
 # include <stdarg.h>
 
-typedef struct	s_pbuff	{
-	char		buff[PRINTF_BUFF_SIZE];
-	int			size;
-	int			printed;
-	t_bignum	bignum;
-}				t_pbuff;
 enum			e_printf_flags {
 	F_SPECIAL = 1,
 	F_LEFT = 2,
@@ -76,10 +70,21 @@ typedef struct	s_numlist {
 typedef struct	s_bignum {
 	t_numlist	*least;
 	t_numlist	*most;
+	int			count;
+	int			most_len;
+	int			most_num_len;
 }				t_bignum;
 
 # define BN_NUM_MAX		999999999999999999
 # define BN_NUM_LEN_LIM	1000000000000000000
+# define BN_NUM_LEN_MAX	100000000000000000
+
+typedef struct	s_pbuff	{
+	char		buff[PRINTF_BUFF_SIZE];
+	int			size;
+	int			printed;
+	t_bignum	bignum;
+}				t_pbuff;
 
 void			flush_pbuff(t_pbuff *pbuff);
 void			putchar_pbuff(t_pbuff *pbuff, char ch);
@@ -90,6 +95,7 @@ void			parse_optionals(const char **format, t_popts *opts,
 		va_list *argptr);
 void			printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff);
 void			printf_width_post(int len, t_popts *opts, t_pbuff *pbuff);
+void			printf_sign(int is_neg, t_popts *opts, t_pbuff *pbuff);
 void			printf_ptr(unsigned long long ptr, t_popts *opts,
 		t_pbuff *pbuff);
 void			printf_str(const char *str, t_popts *opts, t_pbuff *pbuff);
@@ -99,4 +105,9 @@ void			printf_int(unsigned long long num, unsigned int base,
 void			printf_s_int(signed long long num, t_popts *opts,
 		t_pbuff *pbuff);
 void			printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff);
+void 			free_numlst(t_numlist *lst);
+void			mostnum_init_lens(t_bignum *bignum);
+void			init_bignum(t_bignum *bignum, unsigned long long num);
+void			bignum_mul_digit(t_bignum *bignum, unsigned int num);
+void			printf_bignum(t_bignum *bignum, t_pbuff *pbuff);
 #endif

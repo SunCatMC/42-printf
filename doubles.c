@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/19 18:20:03 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/24 23:38:45 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@ static void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	{
 		ptr = buff;
 		if (ldbl->bin.sign)
-			*ptr = '-';
+		*ptr = '-';
 		else if (opts->flags & F_PLUS)
-			*ptr = '+';
+		*ptr = '+';
 		else if (opts->flags & F_SPACE)
-			*ptr = ' ';
+		*ptr = ' ';
 		else
 			--ptr;
 		++ptr;
@@ -43,17 +43,26 @@ static void	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	unsigned long long	int_part;
 	unsigned short		exp;
+	int					length;
+	t_bignum			*bignum;
 
-	(void)opts;
-	(void)pbuff;
 	exp = ldbl->bin.exp - EXP_BIAS;
 	if (exp < 64)
-		int_part = ldbl->bin.fract >> (64 - exp));
+		int_part = ldbl->bin.fract >> (64 - exp);
 	else
 		int_part = ldbl->bin.fract;
-	init_bignum(&(pbuff.bignum), int_part);
+	bignum = &(pbuff->bignum);
+	init_bignum(bignum, int_part);
 	while (exp-- > 64)
-		bignum_mul_digit(&(pbuff.bignum), 2);
+		bignum_mul_digit(bignum, 2);
+	mostnum_init_lens(bignum);
+	length = bignum->most_len + (bignum->count - 1) * 60 + opts->precision + ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
+	if (!(opts->flags & F_ZERO))
+		printf_width_pre(length, opts, pbuff);
+	printf_sign(ldbl->bin.sign, opts, pbuff);
+	if (opts->flags & F_ZERO)
+		printf_width_pre(length, opts, pbuff);
+	printf_bignum(bignum, pbuff);
 }
 
 void		printf_f_ldbl(long double num, t_popts *opts,
@@ -66,6 +75,8 @@ void		printf_f_ldbl(long double num, t_popts *opts,
 		return (printf_max_exp(&ldbl, opts, pbuff));
 	if (opts->precision < 0)
 		opts->precision = 6;
+	if (ldbl.bin.sign | (opts->flags & (F_SPACE | F_PLUS)))
+		--(opts->width);
 	if (ldbl.bin.exp > EXP_BIAS)
 		printf_f_int(&ldbl, opts, pbuff);
 }

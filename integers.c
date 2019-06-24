@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 22:28:53 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/09 00:30:09 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/24 23:39:17 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,7 @@ static void		put_special(unsigned long long num, unsigned int base,
 		t_popts *opts, t_pbuff *pbuff)
 {
 	if (opts->flags & P_SIGNED)
-	{
-		if (opts->flags & P_NEGATIVE)
-			putchar_pbuff(pbuff, '-');
-		else if (opts->flags & F_PLUS)
-			putchar_pbuff(pbuff, '+');
-		else if (opts->flags & F_SPACE)
-			putchar_pbuff(pbuff, ' ');
-	}
+		printf_sign(opts->flags & P_NEGATIVE, opts, pbuff);
 	if (base == 16 && (opts->flags & F_SPECIAL)
 				&& (num > 0 || opts->flags & P_PTR))
 		putmem_pbuff(pbuff, (opts->flags & P_LARGE) ? "0X" : "0x", 2);
