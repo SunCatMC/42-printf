@@ -6,12 +6,22 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/24 23:38:45 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/26 01:04:54 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "ft_printf.h"
+
+unsigned long long	add_num_small(unsigned long long num, unsigned int digit)
+{
+	return (num + digit);
+}
+
+unsigned long long	mul_num_small(unsigned long long num, unsigned int digit)
+{
+	return (num * digit);
+}
 
 static void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
@@ -20,7 +30,7 @@ static void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 
 	opts->precision = -1;
 	opts->flags &= ~(F_ZERO);
-	if (ldbl->bin.fract & ~(1L << 63))
+	if (ldbl->bin.fract << 1)
 		ft_memcpy(buff, opts->flags & P_LARGE ? "NAN" : "nan", 4);
 	else
 	{
@@ -39,22 +49,63 @@ static void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_str(buff, opts, pbuff);
 }
 
-static void	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
+static void	init_bignum_int(t_ldbl *ldbl, t_pbuff *pbuff)
 {
 	unsigned long long	int_part;
-	unsigned short		exp;
-	int					length;
 	t_bignum			*bignum;
+	short				exp;
 
 	exp = ldbl->bin.exp - EXP_BIAS;
-	if (exp < 64)
-		int_part = ldbl->bin.fract >> (64 - exp);
+	if (ldbl->bin.exp == 0 || exp <= 0)
+		int_part = 0;
 	else
-		int_part = ldbl->bin.fract;
+		int_part = exp < 64 ? ldbl->bin.fract >> (64 - exp) : ldbl->bin.fract;
 	bignum = &(pbuff->bignum);
+	bignum->least = bignum->root;
+	bignum->most = bignum->root;
 	init_bignum(bignum, int_part);
 	while (exp-- > 64)
-		bignum_mul_digit(bignum, 2);
+		bignum_func(bignum, 2, &mul_num_small);
+}
+
+static void	init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff)
+{
+	unsigned long long	fract;
+	t_bignum			*bignum;
+	short				exp;
+	int					has_changed;
+	int					i;
+
+	exp = ldbl->bin.exp - EXP_BIAS;
+	fract = exp > 0 ? ldbl->bin.fract << exp : ldbl->bin.fract;
+	exp = fract ? -exp : 0;
+	bignum = &(pbuff->bignum);
+	if (bignum->most->next == NULL)
+		add_numlst(bignum, 0);
+	bignum->least = bignum->most->next;
+	bignum->most = bignum->most->next;
+	//
+	has_changed = 0;
+	i = 0;
+	while (exp >= 0)
+	{
+		if (has_changed)
+			bignum_func(bignum, 10, &mul_num_small);
+		if (i < 64)
+		{
+			if (fract & 1L << i && (has_changed = 1))
+				bignum_func(bignum, 5, &add_num_small);
+			i++;
+		}
+	}
+}
+
+static int	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
+{
+	int			length;
+	t_bignum	*bignum;
+
+	bignum = &(pbuff->bignum);
 	mostnum_init_lens(bignum);
 	length = bignum->most_len + (bignum->count - 1) * 60 + opts->precision + ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
 	if (!(opts->flags & F_ZERO))
@@ -62,21 +113,34 @@ static void	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_sign(ldbl->bin.sign, opts, pbuff);
 	if (opts->flags & F_ZERO)
 		printf_width_pre(length, opts, pbuff);
-	printf_bignum(bignum, pbuff);
+	printf_bignum(pbuff);
+	return (length);
 }
 
 void		printf_f_ldbl(long double num, t_popts *opts,
 		t_pbuff *pbuff)
 {
-	t_ldbl	ldbl;
+	t_ldbl		ldbl;
+	int			length;
+	t_numlist	*tmp;
 
 	ldbl.num = num;
 	if (ldbl.bin.exp == EXP_MAX)
 		return (printf_max_exp(&ldbl, opts, pbuff));
 	if (opts->precision < 0)
 		opts->precision = 6;
-	if (ldbl.bin.sign | (opts->flags & (F_SPACE | F_PLUS)))
-		--(opts->width);
-	if (ldbl.bin.exp > EXP_BIAS)
-		printf_f_int(&ldbl, opts, pbuff);
+	if (opts->width && (ldbl.bin.sign | (opts->flags & (F_SPACE | F_PLUS))))
+		--opts->width;
+	init_bignum_int(&ldbl, pbuff);
+	init_bignum_fract(&ldbl, pbuff);
+	tmp = pbuff->bignum.most;
+	pbuff->bignum.most = pbuff->bignum.least->prev;
+	pbuff->bignum.least = pbuff->bignum.root;
+	length = printf_f_int(&ldbl, opts, pbuff);
+	if (opts->precision || opts->flags & F_SPECIAL)
+		putchar_pbuff(pbuff, '.');
+	pbuff->bignum.least = pbuff->bignum.most->next;
+	pbuff->bignum.most = tmp;
+	printf_bignum(pbuff);
+	printf_width_post(length, opts, pbuff);
 }

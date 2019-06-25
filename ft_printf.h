@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/24 23:39:09 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/26 01:05:06 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ typedef union	u_ldbl {
 
 # define EXP_MAX 32767
 # define EXP_BIAS 16382
+# define FRACT_INT_BIT 0x8000000000000000
 
 typedef struct	s_numlist {
 	unsigned long long	num;
@@ -68,11 +69,13 @@ typedef struct	s_numlist {
 	struct s_numlist	*prev;
 }				t_numlist;
 typedef struct	s_bignum {
-	t_numlist	*least;
-	t_numlist	*most;
-	int			count;
-	int			most_len;
-	int			most_num_len;
+	t_numlist			*root;
+	t_numlist			*least;
+	t_numlist			*most;
+	int					count;
+	int					max_digits;
+	int					most_len;
+	unsigned long long	most_num_len;
 }				t_bignum;
 
 # define BN_NUM_MAX		999999999999999999
@@ -108,6 +111,8 @@ void			printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff);
 void 			free_numlst(t_numlist *lst);
 void			mostnum_init_lens(t_bignum *bignum);
 void			init_bignum(t_bignum *bignum, unsigned long long num);
-void			bignum_mul_digit(t_bignum *bignum, unsigned int num);
-void			printf_bignum(t_bignum *bignum, t_pbuff *pbuff);
+void			bignum_func(t_bignum *bignum, unsigned int num,
+		unsigned long long (*f)(unsigned long long, unsigned int));
+void			printf_bignum(t_pbuff *pbuff);
+void		add_numlst(t_bignum *bignum, unsigned long long num);
 #endif

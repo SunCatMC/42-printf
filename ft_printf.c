@@ -6,14 +6,14 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/12 20:31:38 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/24 23:56:10 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/26 01:05:00 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "ft_printf.h"
 
-static long long	get_s_num(t_popts *opts, va_list *argptr)
+static long long			get_s_num(t_popts *opts, va_list *argptr)
 {
 	if (opts->length == L_CHAR)
 		return((signed char)va_arg(*argptr, int));
@@ -108,19 +108,24 @@ static void					printf_base(const char *format, t_pbuff *pbuff,
 	putstr_pbuff(pbuff, format);
 }
 
-int			ft_printf(const char *format, ...)
+static void					init_pbuff(t_pbuff *pbuff)
+{
+	pbuff->size = 0;
+	pbuff->printed = 0;
+	pbuff->bignum.root = NULL;
+}
+
+int							ft_printf(const char *format, ...)
 {
 	va_list	argptr;
 	t_pbuff	pbuff;
 
-	pbuff.size = 0;
-	pbuff.printed = 0;
-	pbuff.bignum.least = NULL;
+	init_pbuff(&pbuff);
 	va_start(argptr, format);
 	printf_base(format, &pbuff, &argptr);
 	va_end(argptr);
 	flush_pbuff(&pbuff);
-	if (pbuff.bignum.least != NULL)
-		free_numlst(pbuff.bignum.least);
+	if (pbuff.bignum.root != NULL)
+		free_numlst(pbuff.bignum.root);
 	return (pbuff.printed);
 }
