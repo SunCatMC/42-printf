@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/26 01:04:54 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/26 01:33:10 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,23 +77,22 @@ static void	init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff)
 	int					i;
 
 	exp = ldbl->bin.exp - EXP_BIAS;
-	fract = exp > 0 ? ldbl->bin.fract << exp : ldbl->bin.fract;
-	exp = fract ? -exp : 0;
+	fract = exp < 64 ? ldbl->bin.fract << exp : ldbl->bin.fract;
 	bignum = &(pbuff->bignum);
 	if (bignum->most->next == NULL)
 		add_numlst(bignum, 0);
-	bignum->least = bignum->most->next;
-	bignum->most = bignum->most->next;
+	bignum->least = bignum->most;
+	if (fract == 0)
+		return ;
 	//
 	has_changed = 0;
 	i = 0;
-	while (exp >= 0)
+	while (exp++ < 0)
 	{
-		if (has_changed)
-			bignum_func(bignum, 10, &mul_num_small);
+		bignum_func(bignum, 10, &mul_num_small);
 		if (i < 64)
 		{
-			if (fract & 1L << i && (has_changed = 1))
+			if (fract & 1L << i)
 				bignum_func(bignum, 5, &add_num_small);
 			i++;
 		}
@@ -117,6 +116,20 @@ static int	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	return (length);
 }
 
+static void	print_f_fract(t_numlist	*tmp, t_popts *opts, t_pbuff *pbuff)
+{
+	t_bignum	*bignum;
+
+	bignum = &(pbuff->bignum);
+	if (opts->precision || opts->flags & F_SPECIAL)
+		putchar_pbuff(pbuff, '.');
+	bignum->least = bignum->most->next;
+	bignum->most = tmp;
+	bignum->max_digits = opts->precision;
+	mostnum_init_lens(bignum);
+	printf_bignum(pbuff);
+}
+
 void		printf_f_ldbl(long double num, t_popts *opts,
 		t_pbuff *pbuff)
 {
@@ -137,10 +150,6 @@ void		printf_f_ldbl(long double num, t_popts *opts,
 	pbuff->bignum.most = pbuff->bignum.least->prev;
 	pbuff->bignum.least = pbuff->bignum.root;
 	length = printf_f_int(&ldbl, opts, pbuff);
-	if (opts->precision || opts->flags & F_SPECIAL)
-		putchar_pbuff(pbuff, '.');
-	pbuff->bignum.least = pbuff->bignum.most->next;
-	pbuff->bignum.most = tmp;
-	printf_bignum(pbuff);
+	print_f_fract(tmp, opts, pbuff);
 	printf_width_post(length, opts, pbuff);
 }
