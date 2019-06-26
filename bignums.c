@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/26 01:04:48 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/26 22:36:06 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,7 @@ void		init_bignum(t_bignum *bignum, unsigned long long num)
 		add_numlst(bignum, temp);
 }
 
-void		bignum_func(t_bignum *bignum, unsigned int num,
-				unsigned long long (*f)(unsigned long long, unsigned int))
+void		bignum_mul_small(t_bignum *bignum, unsigned int num)
 {
 	t_numlist			*cur;
 	unsigned long long	carry;
@@ -107,7 +106,7 @@ void		bignum_func(t_bignum *bignum, unsigned int num,
 	carry = 0;
 	while (1)
 	{
-		cur->num = f(cur->num, num) + carry;
+		cur->num = cur->num * num + carry;
 		if (cur->num > BN_NUM_MAX)
 		{
 			carry = cur->num / BN_NUM_LEN_LIM;

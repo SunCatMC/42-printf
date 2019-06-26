@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/26 01:05:06 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/26 22:36:20 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,15 @@ typedef struct	s_bignum {
 	t_numlist			*least;
 	t_numlist			*most;
 	int					count;
-	int					max_digits;
 	int					most_len;
 	unsigned long long	most_num_len;
 }				t_bignum;
+typedef struct	s_bigdble {
+	t_bignum	*integ;
+	t_bignum	*fract;
+	int			precision;
+}				t_bigdble;
+
 
 # define BN_NUM_MAX		999999999999999999
 # define BN_NUM_LEN_LIM	1000000000000000000
@@ -109,10 +114,9 @@ void			printf_s_int(signed long long num, t_popts *opts,
 		t_pbuff *pbuff);
 void			printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff);
 void 			free_numlst(t_numlist *lst);
+void			add_numlst(t_bignum *bignum, unsigned long long num);
 void			mostnum_init_lens(t_bignum *bignum);
 void			init_bignum(t_bignum *bignum, unsigned long long num);
-void			bignum_func(t_bignum *bignum, unsigned int num,
-		unsigned long long (*f)(unsigned long long, unsigned int));
+void			bignum_mul_small(t_bignum *bignum, unsigned int num);
 void			printf_bignum(t_pbuff *pbuff);
-void		add_numlst(t_bignum *bignum, unsigned long long num);
 #endif

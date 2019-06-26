@@ -6,22 +6,12 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/26 01:33:10 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/06/26 22:36:12 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "ft_printf.h"
-
-unsigned long long	add_num_small(unsigned long long num, unsigned int digit)
-{
-	return (num + digit);
-}
-
-unsigned long long	mul_num_small(unsigned long long num, unsigned int digit)
-{
-	return (num * digit);
-}
 
 static void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
@@ -65,7 +55,7 @@ static void	init_bignum_int(t_ldbl *ldbl, t_pbuff *pbuff)
 	bignum->most = bignum->root;
 	init_bignum(bignum, int_part);
 	while (exp-- > 64)
-		bignum_func(bignum, 2, &mul_num_small);
+		bignum_mul_small(bignum, 2);
 }
 
 static void	init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff)
@@ -73,29 +63,25 @@ static void	init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff)
 	unsigned long long	fract;
 	t_bignum			*bignum;
 	short				exp;
-	int					has_changed;
-	int					i;
 
 	exp = ldbl->bin.exp - EXP_BIAS;
-	fract = exp < 64 ? ldbl->bin.fract << exp : ldbl->bin.fract;
 	bignum = &(pbuff->bignum);
 	if (bignum->most->next == NULL)
 		add_numlst(bignum, 0);
+	else
+		bignum->most = bignum->most->next;
 	bignum->least = bignum->most;
+	if (ldbl->bin.fract == 0 || exp >= 64)
+		return ;
+	fract = exp > 0 ? ldbl->bin.fract << exp : ldbl->bin.fract;
 	if (fract == 0)
 		return ;
+	init_bignum(bignum, fract);
 	//
-	has_changed = 0;
-	i = 0;
-	while (exp++ < 0)
+	while (exp < 64)
 	{
-		bignum_func(bignum, 10, &mul_num_small);
-		if (i < 64)
-		{
-			if (fract & 1L << i)
-				bignum_func(bignum, 5, &add_num_small);
-			i++;
-		}
+		bignum_mul_small(bignum, 5);
+		++exp;
 	}
 }
 
