@@ -112,7 +112,8 @@ static void					init_pbuff(t_pbuff *pbuff)
 {
 	pbuff->size = 0;
 	pbuff->printed = 0;
-	pbuff->bignum.root = NULL;
+	pbuff->bigdble.integ.least = NULL;
+	pbuff->bigdble.fract.least = NULL;
 }
 
 int							ft_printf(const char *format, ...)
@@ -125,7 +126,9 @@ int							ft_printf(const char *format, ...)
 	printf_base(format, &pbuff, &argptr);
 	va_end(argptr);
 	flush_pbuff(&pbuff);
-	if (pbuff.bignum.root != NULL)
-		free_numlst(pbuff.bignum.root);
+	if (pbuff.bigdble.integ.least != NULL)
+		free_numlst(pbuff.bigdble.integ.least);
+	if (pbuff.bigdble.fract.least != NULL)
+		free_numlst(pbuff.bigdble.fract.least);
 	return (pbuff.printed);
 }

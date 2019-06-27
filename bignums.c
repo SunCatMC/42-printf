@@ -45,17 +45,21 @@ t_numlist	*new_numlst(unsigned long long num)
 
 void		add_numlst(t_bignum *bignum, unsigned long long num)
 {
-	if (bignum->root == NULL)
+	if (bignum->least == NULL)
 	{
-		if ((bignum->root = new_numlst(num)) == NULL)
+		if ((bignum->least = new_numlst(num)) == NULL)
 			exit(0);
-		bignum->least = bignum->root;
-		bignum->most = bignum->root;
+		bignum->most = bignum->least;
+	}
+	else if (bignum->most == NULL)
+	{
+		bignum->least->num = num;
+		bignum->most = bignum->least;
 	}
 	else if (bignum->most->next == NULL)
 	{
 		if ((bignum->most->next = new_numlst(num)) == NULL)
-			malloc_fail(bignum->root);
+			malloc_fail(bignum->least);
 		bignum->most->next->prev = bignum->most;
 		bignum->most = bignum->most->next;
 	}
@@ -92,6 +96,7 @@ void		init_bignum(t_bignum *bignum, unsigned long long num)
 		temp = 0;
 	bignum->count = 0;
 	bignum->max_digits = -1;
+	bignum->most = NULL;
 	add_numlst(bignum, num);
 	if (temp > 0)
 		add_numlst(bignum, temp);
@@ -122,15 +127,13 @@ void		bignum_mul_small(t_bignum *bignum, unsigned int num)
 		add_numlst(bignum, carry);
 }
 
-void		printf_bignum(t_pbuff *pbuff)
+void		printf_bignum(t_bignum 	*bignum, t_pbuff *pbuff)
 {
 	t_numlist			*cur;
-	t_bignum 			*bignum;
 	unsigned long long	num;
 	unsigned long long	num_len;
 	int					len;
 
-	bignum = &(pbuff->bignum);
 	cur = bignum->most;
 	num_len = bignum->most_num_len;
 	len = 0;
@@ -147,12 +150,14 @@ void		printf_bignum(t_pbuff *pbuff)
 		}
 		if (bignum->max_digits < 0 || len < bignum->max_digits)
 		{
-			putchar_pbuff(pbuff, num / num_len + '0');
 			++len;
+			putchar_pbuff(pbuff, num / num_len + '0');
 		}
 		if (cur == bignum->least)
-			return ;
+			break ;
 		cur = cur->prev;
 		num_len = BN_NUM_LEN_MAX;
 	}
+	if (bignum->max_digits > 0 && len < bignum->max_digits)
+		memset_pbuff(pbuff, '0', bignum->max_digits - len);
 }
