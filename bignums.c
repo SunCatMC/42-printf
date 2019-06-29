@@ -82,7 +82,26 @@ void		mostnum_init_lens(t_bignum *bignum)
 	}
 }
 
-void		init_bignum(t_bignum *bignum, unsigned long long num)
+static void	update_bignum_num(t_bignum *bignum, unsigned long long num)
+{
+	bignum->least->num += num % BN_NUM_LEN_LIM;
+	if (bignum->least->num > BN_NUM_MAX || num > BN_NUM_MAX)
+	{
+		num /= BN_NUM_LEN_LIM;
+		if (bignum->least->num > BN_NUM_MAX)
+		{
+			num += bignum->least->num / BN_NUM_LEN_LIM;
+			bignum->least->num %= BN_NUM_LEN_LIM;
+		}
+		if (bignum->least != bignum->most)
+			bignum->most->num += num;
+		else
+			add_numlst(bignum, num);
+	}
+}
+
+void		init_bignum(t_bignum *bignum, unsigned long long num,
+												unsigned long long round)
 {
 	unsigned long long temp;
 
@@ -100,6 +119,7 @@ void		init_bignum(t_bignum *bignum, unsigned long long num)
 	add_numlst(bignum, num);
 	if (temp > 0)
 		add_numlst(bignum, temp);
+	update_bignum_num(bignum, round);
 }
 
 void		bignum_mul_small(t_bignum *bignum, unsigned int num)

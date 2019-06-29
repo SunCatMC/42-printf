@@ -17,7 +17,7 @@ static int	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	int			length;
 	t_bignum	*bignum;
 
-	bignum = &(pbuff->bigdble.integ);
+	bignum = &(pbuff->bigldbl.integ);
 	length = bignum->most_len + (bignum->count - 1) * 60 + opts->precision + ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
 	if (!(opts->flags & F_ZERO))
 		printf_width_pre(length, opts, pbuff);
@@ -33,11 +33,11 @@ static void	printf_f_fract(t_popts *opts, t_pbuff *pbuff)
 	t_bignum	*bignum;
 	int			count;
 
-	bignum = &(pbuff->bigdble.fract);
+	bignum = &(pbuff->bigldbl.fract);
 	if (opts->precision || opts->flags & F_SPECIAL)
 		putchar_pbuff(pbuff, '.');
 	bignum->max_digits = opts->precision;
-	count = pbuff->bigdble.saved_precision_count;
+	count = pbuff->bigldbl.saved_precision_count;
 	while (count-- > bignum->count && bignum->max_digits >= BN_MAX_DIGITS)
 	{
 		memset_pbuff(pbuff, '0', BN_MAX_DIGITS);
@@ -48,11 +48,11 @@ static void	printf_f_fract(t_popts *opts, t_pbuff *pbuff)
 	printf_bignum(bignum, pbuff);
 }
 
-void		printf_f_ldbl(long double num, t_popts *opts,
-		t_pbuff *pbuff)
+void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 {
-	t_ldbl		ldbl;
-	int			length;
+	t_ldbl				ldbl;
+	int					length;
+	unsigned long long	round;
 
 	ldbl.num = num;
 	if (ldbl.bin.exp == EXP_MAX)
@@ -61,8 +61,10 @@ void		printf_f_ldbl(long double num, t_popts *opts,
 		opts->precision = 6;
 	if (opts->width && (ldbl.bin.sign | (opts->flags & (F_SPACE | F_PLUS))))
 		--opts->width;
-	init_bignum_int(&ldbl, pbuff);
-	init_bignum_fract(&ldbl, pbuff);
+	round = round_up_bit(opts->precision - ((ldbl.bin.exp - EXP_BIAS) > 0 ? 0 :
+			ldbl.bin.exp - EXP_BIAS), ldbl.bin.fract);
+	init_bignum_integ(&ldbl, &(pbuff->bigldbl.integ), round);
+	init_bignum_fract(&ldbl, pbuff, round);
 	length = printf_f_int(&ldbl, opts, pbuff);
 	printf_f_fract(opts, pbuff);
 	printf_width_post(length, opts, pbuff);

@@ -77,12 +77,12 @@ typedef struct		s_bignum {
 	int					most_len;
 	unsigned long long	most_num_len;
 }					t_bignum;
-typedef struct		s_bigdble {
+typedef struct		s_bigldbl {
 	t_bignum	integ;
 	t_bignum	fract;
 	int			saved_precision_count;
 	int			does_round_up;
-}					t_bigdble;
+}					t_bigldbl;
 
 # define BN_MAX_DIGITS	18
 # define BN_NUM_MAX		999999999999999999
@@ -93,7 +93,7 @@ typedef struct		s_pbuff	{
 	char		buff[PRINTF_BUFF_SIZE];
 	int			size;
 	int			printed;
-	t_bigdble	bigdble;
+	t_bigldbl	bigldbl;
 }					t_pbuff;
 
 void				flush_pbuff(t_pbuff *pbuff);
@@ -114,15 +114,19 @@ void				printf_int(unsigned long long num, unsigned int base,
 		t_popts *opts, t_pbuff *pbuff);
 void				printf_s_int(signed long long num, t_popts *opts,
 		t_pbuff *pbuff);
-void				printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff);
+void				printf_f_ldbl(long double num, t_popts *opts,
+		t_pbuff *pbuff);
 void 				free_numlst(t_numlist *lst);
 void				add_numlst(t_bignum *bignum, unsigned long long num);
 void				mostnum_init_lens(t_bignum *bignum);
-void				init_bignum(t_bignum *bignum, unsigned long long num);
+void				init_bignum(t_bignum *bignum, unsigned long long num,
+		unsigned long long round);
 void				bignum_mul_small(t_bignum *bignum, unsigned int num);
 void				printf_bignum(t_bignum 	*bignum, t_pbuff *pbuff);
 void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff);
-void				init_bignum_int(t_ldbl *ldbl, t_pbuff *pbuff);
-void				init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff);
+void				init_bignum_integ(t_ldbl *ldbl, t_bignum *bignum,
+		unsigned long long round);
+void				init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff,
+		unsigned long long round);
 unsigned long long	round_up_bit(int shift, unsigned long long fract);
 #endif
