@@ -13,7 +13,7 @@
 #include "ft_printf.h"
 #include <stdlib.h>
 
-void 		free_numlst(t_numlist *lst)
+void 			free_numlst(t_numlist *lst)
 {
 	t_numlist *tmp;
 
@@ -25,13 +25,20 @@ void 		free_numlst(t_numlist *lst)
 	}
 }
 
-static void	malloc_fail(t_numlist *lst)
+static void		del_numlst(t_numlist **lst)
 {
-	free_numlst(lst);
+	free_numlst(*lst);
+	*lst = NULL;
+}
+
+void			malloc_fail(t_bigldbl *bigldbl)
+{
+	free_numlst(bigldbl->integ.least);
+	free_numlst(bigldbl->integ.most);
 	exit(0);
 }
 
-t_numlist	*new_numlst(unsigned long long num)
+t_numlist		*new_numlst(unsigned long long num)
 {
 	t_numlist *lst;
 
@@ -43,7 +50,7 @@ t_numlist	*new_numlst(unsigned long long num)
 	return (lst);
 }
 
-void		add_numlst(t_bignum *bignum, unsigned long long num)
+void			add_numlst(t_bignum *bignum, unsigned long long num)
 {
 	if (bignum->least == NULL)
 	{
@@ -59,7 +66,7 @@ void		add_numlst(t_bignum *bignum, unsigned long long num)
 	else if (bignum->most->next == NULL)
 	{
 		if ((bignum->most->next = new_numlst(num)) == NULL)
-			malloc_fail(bignum->least);
+			return (del_numlst(&bignum->least));
 		bignum->most->next->prev = bignum->most;
 		bignum->most = bignum->most->next;
 	}
@@ -71,7 +78,7 @@ void		add_numlst(t_bignum *bignum, unsigned long long num)
 	++bignum->count;
 }
 
-void		mostnum_init_lens(t_bignum *bignum)
+void			mostnum_init_lens(t_bignum *bignum)
 {
 	bignum->most_num_len = 1;
 	bignum->most_len = 1;
@@ -82,26 +89,7 @@ void		mostnum_init_lens(t_bignum *bignum)
 	}
 }
 
-static void	update_bignum_num(t_bignum *bignum, unsigned long long num)
-{
-	bignum->least->num += num % BN_NUM_LEN_LIM;
-	if (bignum->least->num > BN_NUM_MAX || num > BN_NUM_MAX)
-	{
-		num /= BN_NUM_LEN_LIM;
-		if (bignum->least->num > BN_NUM_MAX)
-		{
-			num += bignum->least->num / BN_NUM_LEN_LIM;
-			bignum->least->num %= BN_NUM_LEN_LIM;
-		}
-		if (bignum->least != bignum->most)
-			bignum->most->num += num;
-		else
-			add_numlst(bignum, num);
-	}
-}
-
-void		init_bignum(t_bignum *bignum, unsigned long long num,
-												unsigned long long round)
+void			init_bignum(t_bignum *bignum, unsigned long long num)
 {
 	unsigned long long temp;
 
@@ -119,10 +107,68 @@ void		init_bignum(t_bignum *bignum, unsigned long long num,
 	add_numlst(bignum, num);
 	if (temp > 0)
 		add_numlst(bignum, temp);
-	update_bignum_num(bignum, round);
 }
 
-void		bignum_mul_small(t_bignum *bignum, unsigned int num)
+static unsigned long long numlst_get_carry(t_numlist *cur)
+{
+	unsigned long long carry;
+
+	if (cur->num > BN_NUM_MAX)
+	{
+		carry = cur->num / BN_NUM_LEN_LIM;
+		cur->num %= BN_NUM_LEN_LIM;
+	}
+	else
+		carry = 0;
+	return (carry);
+}
+
+unsigned int	bignum_inc_digit(t_bignum *bignum, int shift)
+{
+	t_numlist			*cur;
+	unsigned long long	carry;
+
+	if (shift > 0)
+	{
+		cur = bignum->least;
+		while (shift > BN_MAX_DIGITS)
+		{
+			shift -= BN_MAX_DIGITS;
+			cur = cur->next;
+		}
+		--shift;
+	} else
+	{
+		cur = bignum->most;
+		shift += bignum->most_len;
+		while (shift < 0)
+		{
+			shift += BN_MAX_DIGITS;
+			cur = cur->prev;
+		}
+	}
+	carry = 1;
+	while (shift-- > 0)
+		carry *= 10;
+	while (1)
+	{
+		cur->num += carry;
+		carry = numlst_get_carry(cur);
+		if (cur == bignum->most)
+		{
+			if (bignum->most->num >= bignum->most_num_len * 10)
+			{
+				carry = 1;
+				bignum->most->num %= bignum->most_num_len * 10;
+			}
+			break ;
+		}
+		cur = cur->next;
+	}
+	return (carry);
+}
+
+void			bignum_mul_small(t_bignum *bignum, unsigned int num)
 {
 	t_numlist			*cur;
 	unsigned long long	carry;
@@ -132,13 +178,7 @@ void		bignum_mul_small(t_bignum *bignum, unsigned int num)
 	while (1)
 	{
 		cur->num = cur->num * num + carry;
-		if (cur->num > BN_NUM_MAX)
-		{
-			carry = cur->num / BN_NUM_LEN_LIM;
-			cur->num %= BN_NUM_LEN_LIM;
-		}
-		else
-			carry = 0;
+		carry = numlst_get_carry(cur);
 		if (cur == bignum->most)
 			break ;
 		cur = cur->next;
@@ -147,7 +187,7 @@ void		bignum_mul_small(t_bignum *bignum, unsigned int num)
 		add_numlst(bignum, carry);
 }
 
-void		printf_bignum(t_bignum 	*bignum, t_pbuff *pbuff)
+void			printf_bignum(t_bignum 	*bignum, t_pbuff *pbuff)
 {
 	t_numlist			*cur;
 	unsigned long long	num;

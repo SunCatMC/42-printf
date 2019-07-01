@@ -52,7 +52,7 @@ void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 {
 	t_ldbl				ldbl;
 	int					length;
-	unsigned long long	round;
+	short				exp;
 
 	ldbl.num = num;
 	if (ldbl.bin.exp == EXP_MAX)
@@ -61,10 +61,11 @@ void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 		opts->precision = 6;
 	if (opts->width && (ldbl.bin.sign | (opts->flags & (F_SPACE | F_PLUS))))
 		--opts->width;
-	round = round_up_bit(opts->precision - ((ldbl.bin.exp - EXP_BIAS) > 0 ? 0 :
-			ldbl.bin.exp - EXP_BIAS), ldbl.bin.fract);
-	init_bignum_integ(&ldbl, &(pbuff->bigldbl.integ), round);
-	init_bignum_fract(&ldbl, pbuff, round);
+	init_bignum_integ(&ldbl, &(pbuff->bigldbl));
+	init_bignum_fract(&ldbl, &(pbuff->bigldbl));
+	exp = ldbl.bin.exp - EXP_BIAS;
+	if (check_round_up(opts->precision + (exp < 0 ? 0 : exp), ldbl.bin.fract))
+		bigldbl_inc_digit(&(pbuff->bigldbl), -opts->precision);
 	length = printf_f_int(&ldbl, opts, pbuff);
 	printf_f_fract(opts, pbuff);
 	printf_width_post(length, opts, pbuff);

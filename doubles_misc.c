@@ -13,7 +13,7 @@
 #include "ft_printf.h"
 #include "libft.h"
 
-void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
+void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	char	buff[5];
 	char	*ptr;
@@ -39,54 +39,48 @@ void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_str(buff, opts, pbuff);
 }
 
-void				init_bignum_integ(t_ldbl *ldbl, t_bignum *bignum,
-													unsigned long long round)
+void	init_bignum_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
 {
+	t_bignum			*bignum;
 	unsigned long long	int_part;
-	unsigned long long	int_round;
 	short				exp;
 
 	exp = ldbl->bin.exp - EXP_BIAS;
 	int_part = 0;
-	int_round = 0;
+	bignum = &(bigldbl->integ);
 	if (!(ldbl->bin.exp == 0 || exp <= 0))
 	{
 		int_part = ldbl->bin.fract;
-		int_round = 0;
 		if (exp < 64)
-		{
 			int_part >>= (64 - exp);
-			int_round = round >> (64 - exp);
-		}
 	}
-	init_bignum(bignum, int_part, int_round);
+	init_bignum(bignum, int_part);
 	while (exp-- > 64)
+	{
 		bignum_mul_small(bignum, 2);
+		if (bignum->least == NULL)
+			malloc_fail(bigldbl);
+	}
 	mostnum_init_lens(bignum);
 }
 
-void				init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff,
-													unsigned long long round)
+void	init_bignum_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 {
 	t_bignum			*bignum;
 	unsigned long long	fract;
 	short				exp;
 	int					i;
 
-	(void)round;
 	exp = ldbl->bin.exp - EXP_BIAS;
-	bignum = &(pbuff->bigldbl.fract);
+	bignum = &(bigldbl->fract);
 	if (ldbl->bin.fract == 0 || exp >= 64)
-		init_bignum(bignum, 0, 0);
+		init_bignum(bignum, 0);
 	else
 	{
 		fract = ldbl->bin.fract;
 		if (exp > 0)
-		{
 			fract <<= exp;
-			round <<= exp;
-		}
-		init_bignum(bignum, fract, round);
+		init_bignum(bignum, fract);
 	}
 	if (bignum->least->num == 0 && bignum->least == bignum->most)
 		return ;
@@ -95,12 +89,12 @@ void				init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff,
 	i = exp < 0 ? 64 + -exp : 64;
 	while (i-- > 0)
 		bignum_mul_small(bignum, 5);
-	pbuff->bigldbl.saved_precision_count = -1;
+	bigldbl->saved_precision_count = -1;
 	if (!(fract & FRACT_LAST_BIT) || exp < 0)
 	{
 		i = exp < 0 ? 64 + -exp : 64;
-		pbuff->bigldbl.saved_precision_count = i / BN_MAX_DIGITS + 1;
-		if (pbuff->bigldbl.saved_precision_count > bignum->count)
+		bigldbl->saved_precision_count = i / BN_MAX_DIGITS + 1;
+		if (bigldbl->saved_precision_count > bignum->count)
 			add_numlst(bignum, 0);
 		i %= BN_MAX_DIGITS;
 		while (--i > 0)
@@ -113,7 +107,7 @@ void				init_bignum_fract(t_ldbl *ldbl, t_pbuff *pbuff,
 		mostnum_init_lens(bignum);
 }
 
-unsigned long long	round_up_bit(int shift, unsigned long long fract)
+int		check_round_up(int shift, unsigned long long fract)
 {
 	int	is_odd;
 
@@ -122,9 +116,22 @@ unsigned long long	round_up_bit(int shift, unsigned long long fract)
 	fract <<= shift - 1;
 	is_odd = (fract & FRACT_LAST_BIT) != 0;
 	fract <<= 1;
-	if (fract > FRACT_LAST_BIT || (fract == FRACT_LAST_BIT && is_odd))
+	return(fract > FRACT_LAST_BIT || (fract == FRACT_LAST_BIT && is_odd));
+}
+
+void	bigldbl_inc_digit(t_bigldbl *bigldbl, int exp)
+{
+	int			carry;
+
+	if (exp < 0)
 	{
-		return (FRACT_LAST_BIT >> shift);
+		carry = bignum_inc_digit(&(bigldbl->fract), exp);
+		exp = 0;
 	}
-	return (0);
+	if (exp > 0 || carry > 0)
+	{
+		carry = bignum_inc_digit(&(bigldbl->integ), exp);
+		if (carry != 0)
+			add_numlst(&(bigldbl->integ), carry);
+	}
 }

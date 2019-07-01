@@ -126,9 +126,7 @@ int							ft_printf(const char *format, ...)
 	printf_base(format, &pbuff, &argptr);
 	va_end(argptr);
 	flush_pbuff(&pbuff);
-	if (pbuff.bigldbl.integ.least != NULL)
-		free_numlst(pbuff.bigldbl.integ.least);
-	if (pbuff.bigldbl.fract.least != NULL)
-		free_numlst(pbuff.bigldbl.fract.least);
+	free_numlst(pbuff.bigldbl.integ.least);
+	free_numlst(pbuff.bigldbl.fract.least);
 	return (pbuff.printed);
 }
