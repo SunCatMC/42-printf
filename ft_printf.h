@@ -25,7 +25,7 @@ enum				e_printf_flags {
 	P_SIGNED = 64,
 	P_LARGE = 128,
 	P_NUM = 256,
-	P_PTR = 512,
+	P_PTR = 512
 };
 enum				e_printf_length {
 	L_CHAR,
@@ -72,16 +72,21 @@ typedef struct		s_numlist {
 typedef struct		s_bignum {
 	t_numlist			*least;
 	t_numlist			*most;
+	unsigned long long	most_num_len;
 	int					count;
 	int					max_digits;
 	int					most_len;
-	unsigned long long	most_num_len;
+	int					is_limited;
 }					t_bignum;
 typedef struct		s_bigldbl {
 	t_bignum	integ;
 	t_bignum	fract;
 	int			saved_precision_count;
 }					t_bigldbl;
+enum				e_bigldbl {
+	B_IS_UNLIMITED = 0,
+	B_IS_LIMITED
+};
 
 # define BN_MAX_DIGITS	18
 # define BN_NUM_MAX		999999999999999999
@@ -116,16 +121,22 @@ void				printf_s_int(signed long long num, t_popts *opts,
 void				printf_f_ldbl(long double num, t_popts *opts,
 		t_pbuff *pbuff);
 void 				free_numlst(t_numlist *lst);
-void				malloc_fail(t_bigldbl *bigldbl);
-void				add_numlst(t_bignum *bignum, unsigned long long num);
+void				del_numlst(t_numlist **lst);
+t_numlist			*new_numlst(unsigned long long num);
+unsigned long long	numlst_get_carry(t_numlist *cur);
+void				bignum_add_numlst(t_bignum *bignum, unsigned long long num);
 void				mostnum_init_lens(t_bignum *bignum);
 void				init_bignum(t_bignum *bignum, unsigned long long num);
+int					bignum_find_numlst(t_bignum *bignum, t_numlist **result,
+															int digit_exp);
+unsigned int		bignum_round_up(t_bignum *bignum, int digit_exp);
+unsigned int		bignum_inc_num(t_bignum *bignum, t_numlist *cur,
+													unsigned long long num);
 void				bignum_mul_small(t_bignum *bignum, unsigned int num);
-unsigned int		bignum_inc_digit(t_bignum *bignum, int shift);
 void				printf_bignum(t_bignum 	*bignum, t_pbuff *pbuff);
+void				malloc_fail(t_bigldbl *bigldbl);
 void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff);
-void				init_bignum_integ(t_ldbl *ldbl, t_bigldbl *bigldbl);
-void				init_bignum_fract(t_ldbl *ldbl, t_bigldbl *bigldbl);
-int					check_round_up(int shift, unsigned long long fract);
-void				bigldbl_inc_digit(t_bigldbl *bigldbl, int exp);
+void				init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl);
+void				init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl);
+void				bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp);
 #endif

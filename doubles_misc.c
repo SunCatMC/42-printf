@@ -6,12 +6,20 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/27 22:51:36 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/03 23:27:24 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
+#include <stdlib.h>
+
+void	malloc_fail(t_bigldbl *bigldbl)
+{
+	free_numlst(bigldbl->integ.least);
+	free_numlst(bigldbl->integ.most);
+	exit(0);
+}
 
 void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
@@ -39,7 +47,7 @@ void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_str(buff, opts, pbuff);
 }
 
-void	init_bignum_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
+void	init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
 {
 	t_bignum			*bignum;
 	unsigned long long	int_part;
@@ -64,7 +72,7 @@ void	init_bignum_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
 	mostnum_init_lens(bignum);
 }
 
-void	init_bignum_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
+void	init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 {
 	t_bignum			*bignum;
 	unsigned long long	fract;
@@ -83,19 +91,21 @@ void	init_bignum_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 		init_bignum(bignum, fract);
 	}
 	if (bignum->least->num == 0 && bignum->least == bignum->most)
+	{
+		bignum->is_limited = B_IS_LIMITED;
 		return ;
+	}
 	bignum->most_num_len = 1;
 	bignum->most_len = 1;
 	i = exp < 0 ? 64 + -exp : 64;
 	while (i-- > 0)
 		bignum_mul_small(bignum, 5);
-	bigldbl->saved_precision_count = -1;
 	if (!(fract & FRACT_LAST_BIT) || exp < 0)
 	{
 		i = exp < 0 ? 64 + -exp : 64;
 		bigldbl->saved_precision_count = i / BN_MAX_DIGITS + 1;
 		if (bigldbl->saved_precision_count > bignum->count)
-			add_numlst(bignum, 0);
+			bignum_add_numlst(bignum, 0);
 		i %= BN_MAX_DIGITS;
 		while (--i > 0)
 		{
@@ -104,34 +114,30 @@ void	init_bignum_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 		}
 	}
 	else
+	{
+		bigldbl->saved_precision_count = bignum->count;
 		mostnum_init_lens(bignum);
+	}
+	if (bigldbl->saved_precision_count == bignum->count)
+		bignum->is_limited = B_IS_LIMITED;
 }
 
-int		check_round_up(int shift, unsigned long long fract)
+void	bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 {
-	int	is_odd;
+	unsigned int	carry;
+	int				i;
 
-	if (shift > 63 || shift < 0)
-		return (0);
-	fract <<= shift - 1;
-	is_odd = (fract & FRACT_LAST_BIT) != 0;
-	fract <<= 1;
-	return(fract > FRACT_LAST_BIT || (fract == FRACT_LAST_BIT && is_odd));
-}
-
-void	bigldbl_inc_digit(t_bigldbl *bigldbl, int exp)
-{
-	int			carry;
-
-	if (exp < 0)
+	if (digit_exp < 0)
 	{
-		carry = bignum_inc_digit(&(bigldbl->fract), exp);
-		exp = 0;
+		i = bigldbl->fract.count;
+		while (i++ < bigldbl->saved_precision_count && digit_exp < 0)
+			digit_exp += BN_MAX_DIGITS;
+		if (digit_exp >= 0)
+			return ;
+		carry = bignum_round_up(&(bigldbl->fract), digit_exp);
+		digit_exp = 0;
 	}
-	if (exp > 0 || carry > 0)
-	{
-		carry = bignum_inc_digit(&(bigldbl->integ), exp);
-		if (carry != 0)
-			add_numlst(&(bigldbl->integ), carry);
-	}
+	if (digit_exp >= 0 || carry > 0)
+		if ((carry = bignum_round_up(&(bigldbl->integ), digit_exp)) != 0)
+			bignum_add_numlst(&(bigldbl->integ), carry);
 }

@@ -6,7 +6,7 @@
 #    By: htryndam <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/16 22:52:18 by htryndam          #+#    #+#              #
-#    Updated: 2019/06/28 00:05:35 by htryndam         ###   ########.fr        #
+#    Updated: 2019/07/03 19:22:04 by htryndam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = libftprintf.a
 
 IDIR = .
 SOURCES = ft_printf.c buffer.c optionals.c basic_types.c integers.c doubles.c \
-		  doubles_misc.c bignums.c misc.c
+		  doubles_misc.c numlist.c bignums.c misc.c
 
 SRC = $(SOURCES)
 

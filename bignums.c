@@ -6,51 +6,14 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/26 22:36:06 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/03 23:27:09 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include <stdlib.h>
 
-void 			free_numlst(t_numlist *lst)
-{
-	t_numlist *tmp;
-
-	while (lst != NULL)
-	{
-		tmp = lst->next;
-		free(lst);
-		lst = tmp;
-	}
-}
-
-static void		del_numlst(t_numlist **lst)
-{
-	free_numlst(*lst);
-	*lst = NULL;
-}
-
-void			malloc_fail(t_bigldbl *bigldbl)
-{
-	free_numlst(bigldbl->integ.least);
-	free_numlst(bigldbl->integ.most);
-	exit(0);
-}
-
-t_numlist		*new_numlst(unsigned long long num)
-{
-	t_numlist *lst;
-
-	if ((lst = (t_numlist *)malloc(sizeof(t_numlist))) == NULL)
-		return (NULL);
-	lst->num = num;
-	lst->next = NULL;
-	lst->prev = NULL;
-	return (lst);
-}
-
-void			add_numlst(t_bignum *bignum, unsigned long long num)
+void			bignum_add_numlst(t_bignum *bignum, unsigned long long num)
 {
 	if (bignum->least == NULL)
 	{
@@ -104,65 +67,88 @@ void			init_bignum(t_bignum *bignum, unsigned long long num)
 	bignum->count = 0;
 	bignum->max_digits = -1;
 	bignum->most = NULL;
-	add_numlst(bignum, num);
+	bignum->is_limited = B_IS_UNLIMITED;
+	bignum_add_numlst(bignum, num);
 	if (temp > 0)
-		add_numlst(bignum, temp);
+		bignum_add_numlst(bignum, temp);
 }
 
-static unsigned long long numlst_get_carry(t_numlist *cur)
+int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
+															int digit_exp)
 {
-	unsigned long long carry;
+	t_numlist	*cur;
 
-	if (cur->num > BN_NUM_MAX)
-	{
-		carry = cur->num / BN_NUM_LEN_LIM;
-		cur->num %= BN_NUM_LEN_LIM;
-	}
-	else
-		carry = 0;
-	return (carry);
-}
-
-unsigned int	bignum_inc_digit(t_bignum *bignum, int shift)
-{
-	t_numlist			*cur;
-	unsigned long long	carry;
-
-	if (shift > 0)
+	if (digit_exp >= 0)
 	{
 		cur = bignum->least;
-		while (shift > BN_MAX_DIGITS)
+		while (cur != NULL && digit_exp > BN_MAX_DIGITS)
 		{
-			shift -= BN_MAX_DIGITS;
+			digit_exp -= BN_MAX_DIGITS;
 			cur = cur->next;
 		}
-		--shift;
-	} else
+	}
+	else
 	{
 		cur = bignum->most;
-		shift += bignum->most_len;
-		while (shift < 0)
+		digit_exp += bignum->most_len;
+		while (cur != NULL && digit_exp < 0)
 		{
-			shift += BN_MAX_DIGITS;
+			digit_exp += BN_MAX_DIGITS;
 			cur = cur->prev;
 		}
 	}
-	carry = 1;
-	while (shift-- > 0)
-		carry *= 10;
-	while (1)
+	*result = cur;
+	return (digit_exp);
+}
+
+// what happens on border between numlists?
+
+unsigned int	bignum_round_up(t_bignum *bignum, int digit_exp)
+{
+	t_numlist			*cur;
+	unsigned long long	num_len;
+	unsigned long long	num_high_sub;
+	unsigned int		digit;
+
+	digit_exp = bignum_find_numlst(bignum, &cur, digit_exp);
+	if (cur == NULL)
+		return (0);
+	num_len = 1;
+	while (--digit_exp > 0)
+		num_len *= 10;
+	num_high_sub = cur->num / num_len;
+	digit = num_high_sub % 10;
+	if (digit != 5)
+		return (digit < 5 ? 0 : bignum_inc_num(bignum, cur, num_len * 10));
+	if (cur != bignum->least || cur->num % num_len != 0)
+		return (bignum_inc_num(bignum, cur, num_len * 10));
+	return (num_high_sub / 10 % 2 == 0 ? 0 :
+								bignum_inc_num(bignum, cur, num_len * 10));
+}
+
+unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
+													unsigned long long num)
+{
+	unsigned long long	carry;
+	unsigned long long	most_num_lim;
+
+	carry = num;
+	while (carry != 0)
 	{
 		cur->num += carry;
-		carry = numlst_get_carry(cur);
 		if (cur == bignum->most)
 		{
-			if (bignum->most->num >= bignum->most_num_len * 10)
+			if (!(bignum->is_limited))
+				bignum_add_numlst(bignum, numlst_get_carry(cur));
+			most_num_lim = bignum->most_num_len * 10;
+			if (bignum->is_limited && bignum->most->num >= most_num_lim)
 			{
-				carry = 1;
-				bignum->most->num %= bignum->most_num_len * 10;
+				carry = bignum->most->num / bignum->most_num_len;
+				bignum->most->num %= most_num_lim;
 			}
-			break ;
+			return (carry);
 		}
+		carry = numlst_get_carry(cur);
 		cur = cur->next;
 	}
 	return (carry);
@@ -184,7 +170,7 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num)
 		cur = cur->next;
 	}
 	if (carry != 0)
-		add_numlst(bignum, carry);
+		bignum_add_numlst(bignum, carry);
 }
 
 void			printf_bignum(t_bignum 	*bignum, t_pbuff *pbuff)

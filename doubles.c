@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/26 22:36:12 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/03 23:27:16 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ static void	printf_f_fract(t_popts *opts, t_pbuff *pbuff)
 
 void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 {
-	t_ldbl				ldbl;
-	int					length;
-	short				exp;
+	t_ldbl		ldbl;
+	int			length;
+	t_bigldbl	*bigldbl;
 
 	ldbl.num = num;
 	if (ldbl.bin.exp == EXP_MAX)
@@ -61,11 +61,10 @@ void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 		opts->precision = 6;
 	if (opts->width && (ldbl.bin.sign | (opts->flags & (F_SPACE | F_PLUS))))
 		--opts->width;
-	init_bignum_integ(&ldbl, &(pbuff->bigldbl));
-	init_bignum_fract(&ldbl, &(pbuff->bigldbl));
-	exp = ldbl.bin.exp - EXP_BIAS;
-	if (check_round_up(opts->precision + (exp < 0 ? 0 : exp), ldbl.bin.fract))
-		bigldbl_inc_digit(&(pbuff->bigldbl), -opts->precision);
+	bigldbl = &(pbuff->bigldbl);
+	init_bigldbl_integ(&ldbl, bigldbl);
+	init_bigldbl_fract(&ldbl, bigldbl);
+	bigldbl_round_up(bigldbl, -opts->precision);
 	length = printf_f_int(&ldbl, opts, pbuff);
 	printf_f_fract(opts, pbuff);
 	printf_width_post(length, opts, pbuff);
