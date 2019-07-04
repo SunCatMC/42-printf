@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/03 23:27:16 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/04 20:59:03 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void	printf_f_fract(t_popts *opts, t_pbuff *pbuff)
 	if (opts->precision || opts->flags & F_SPECIAL)
 		putchar_pbuff(pbuff, '.');
 	bignum->max_digits = opts->precision;
-	count = pbuff->bigldbl.saved_precision_count;
+	count = bignum->limit;
 	while (count-- > bignum->count && bignum->max_digits >= BN_MAX_DIGITS)
 	{
 		memset_pbuff(pbuff, '0', BN_MAX_DIGITS);

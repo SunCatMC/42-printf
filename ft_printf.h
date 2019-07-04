@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/26 22:36:20 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/04 20:59:20 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,17 +76,12 @@ typedef struct		s_bignum {
 	int					count;
 	int					max_digits;
 	int					most_len;
-	int					is_limited;
+	int					limit;
 }					t_bignum;
 typedef struct		s_bigldbl {
 	t_bignum	integ;
 	t_bignum	fract;
-	int			saved_precision_count;
 }					t_bigldbl;
-enum				e_bigldbl {
-	B_IS_UNLIMITED = 0,
-	B_IS_LIMITED
-};
 
 # define BN_MAX_DIGITS	18
 # define BN_NUM_MAX		999999999999999999
@@ -139,4 +134,7 @@ void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff);
 void				init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl);
 void				init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl);
 void				bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp);
+int					check_rounding(unsigned long long num_high_sub,
+	unsigned int digit, unsigned long long num_low_sub, t_numlist *cur,
+	t_bignum *bignum);
 #endif

@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/03 23:27:24 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/04 20:59:12 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void	init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 	}
 	if (bignum->least->num == 0 && bignum->least == bignum->most)
 	{
-		bignum->is_limited = B_IS_LIMITED;
+		bignum->limit = 1;
 		return ;
 	}
 	bignum->most_num_len = 1;
@@ -103,8 +103,8 @@ void	init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 	if (!(fract & FRACT_LAST_BIT) || exp < 0)
 	{
 		i = exp < 0 ? 64 + -exp : 64;
-		bigldbl->saved_precision_count = i / BN_MAX_DIGITS + 1;
-		if (bigldbl->saved_precision_count > bignum->count)
+		bignum->limit = i / BN_MAX_DIGITS + 1;
+		if (bignum->limit > bignum->count)
 			bignum_add_numlst(bignum, 0);
 		i %= BN_MAX_DIGITS;
 		while (--i > 0)
@@ -115,11 +115,9 @@ void	init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 	}
 	else
 	{
-		bigldbl->saved_precision_count = bignum->count;
+		bignum->limit = bignum->count;
 		mostnum_init_lens(bignum);
 	}
-	if (bigldbl->saved_precision_count == bignum->count)
-		bignum->is_limited = B_IS_LIMITED;
 }
 
 void	bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
@@ -130,14 +128,18 @@ void	bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 	if (digit_exp < 0)
 	{
 		i = bigldbl->fract.count;
-		while (i++ < bigldbl->saved_precision_count && digit_exp < 0)
+		while (i++ < bigldbl->fract.limit && digit_exp < 0)
 			digit_exp += BN_MAX_DIGITS;
 		if (digit_exp >= 0)
 			return ;
 		carry = bignum_round_up(&(bigldbl->fract), digit_exp);
-		digit_exp = 0;
-	}
-	if (digit_exp >= 0 || carry > 0)
-		if ((carry = bignum_round_up(&(bigldbl->integ), digit_exp)) != 0)
-			bignum_add_numlst(&(bigldbl->integ), carry);
+	} else if (digit_exp > 0)
+		bignum_round_up(&(bigldbl->integ), digit_exp);
+	else if (bigldbl->fract.limit == bigldbl->fract.count
+	&& check_rounding(bigldbl->integ.least->num,
+	bigldbl->fract.most->num / bigldbl->fract.most_num_len,
+	bigldbl->fract.most->num, bigldbl->fract.most, &(bigldbl->fract)))
+		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1L);
+	if (digit_exp < 0 && carry != 0)
+		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1L);
 }
