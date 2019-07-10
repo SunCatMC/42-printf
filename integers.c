@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 22:28:53 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/24 23:39:17 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/10 18:24:26 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,6 @@ void			printf_int(unsigned long long num, unsigned int base,
 {
 	t_pint pint;
 
-//	if (opts->precision == 0 && num == 0)
-//		return (zero_case(base, opts, pbuff));
 	pint = init_lens(num, base, opts);
 	if (opts->precision == 0 && num == 0)
 		--pint.length;
