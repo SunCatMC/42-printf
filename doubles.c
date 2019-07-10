@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/04 20:59:03 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/10 23:17:56 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_sign(ldbl->bin.sign, opts, pbuff);
 	if (opts->flags & F_ZERO)
 		printf_width_pre(length, opts, pbuff);
-	printf_bignum(bignum, pbuff);
+	printf_bignum(bignum, -1, pbuff);
 	return (length);
 }
 
@@ -32,20 +32,21 @@ static void	printf_f_fract(t_popts *opts, t_pbuff *pbuff)
 {
 	t_bignum	*bignum;
 	int			count;
+	int			max_printed_digits;
 
 	bignum = &(pbuff->bigldbl.fract);
 	if (opts->precision || opts->flags & F_SPECIAL)
 		putchar_pbuff(pbuff, '.');
-	bignum->max_digits = opts->precision;
+	max_printed_digits = opts->precision;
 	count = bignum->limit;
-	while (count-- > bignum->count && bignum->max_digits >= BN_MAX_DIGITS)
+	while (count-- > bignum->count && max_printed_digits >= BN_MAX_DIGITS)
 	{
 		memset_pbuff(pbuff, '0', BN_MAX_DIGITS);
-		bignum->max_digits -= BN_MAX_DIGITS;
+		max_printed_digits -= BN_MAX_DIGITS;
 	}
 	if (count > bignum->count)
-		return (memset_pbuff(pbuff, '0', bignum->max_digits));
-	printf_bignum(bignum, pbuff);
+		return (memset_pbuff(pbuff, '0', max_printed_digits));
+	printf_bignum(bignum, max_printed_digits, pbuff);
 }
 
 void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)

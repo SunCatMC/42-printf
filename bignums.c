@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/10 21:26:03 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/10 23:17:51 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ void			init_bignum(t_bignum *bignum, unsigned long long num)
 	else
 		temp = 0;
 	bignum->count = 0;
-	bignum->max_digits = -1;
 	bignum->most = NULL;
 	bignum->limit = -1;
 	bignum_add_numlst(bignum, num);
@@ -81,7 +80,7 @@ int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
 	if (digit_exp >= 0)
 	{
 		cur = bignum->least;
-		while (cur != NULL && digit_exp > BN_MAX_DIGITS)
+		while (cur != bignum->most && digit_exp > BN_MAX_DIGITS)
 		{
 			digit_exp -= BN_MAX_DIGITS;
 			cur = cur->next;
@@ -91,13 +90,13 @@ int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
 	{
 		cur = bignum->most;
 		digit_exp += bignum->most_len;
-		while (cur != NULL && digit_exp < 0)
+		while (cur != bignum->least && digit_exp < 0)
 		{
 			digit_exp += BN_MAX_DIGITS;
 			cur = cur->prev;
 		}
 	}
-	*result = cur;
+	*result = digit_exp >= 0 && digit_exp <= BN_MAX_DIGITS ? cur : NULL;
 	return (digit_exp);
 }
 
@@ -191,7 +190,8 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num)
 		bignum_add_numlst(bignum, carry);
 }
 
-void			printf_bignum(t_bignum *bignum, t_pbuff *pbuff)
+void			printf_bignum(t_bignum *bignum, int max_printed_digits,
+																t_pbuff *pbuff)
 {
 	t_numlist			*cur;
 	unsigned long long	num;
@@ -201,18 +201,18 @@ void			printf_bignum(t_bignum *bignum, t_pbuff *pbuff)
 	cur = bignum->most;
 	num_len = bignum->most_num_len;
 	len = 0;
-	while (bignum->max_digits < 0 || len < bignum->max_digits)
+	while (max_printed_digits < 0 || len < max_printed_digits)
 	{
 		num = cur->num;
-		while (num_len >= 10 && (bignum->max_digits < 0
-								|| len < bignum->max_digits))
+		while (num_len >= 10 && (max_printed_digits < 0
+								|| len < max_printed_digits))
 		{
 			putchar_pbuff(pbuff, num / num_len + '0');
 			num %= num_len;
 			num_len /= 10;
 			++len;
 		}
-		if (bignum->max_digits < 0 || len < bignum->max_digits)
+		if (max_printed_digits < 0 || len < max_printed_digits)
 		{
 			++len;
 			putchar_pbuff(pbuff, num / num_len + '0');
@@ -222,6 +222,6 @@ void			printf_bignum(t_bignum *bignum, t_pbuff *pbuff)
 		cur = cur->prev;
 		num_len = BN_NUM_LEN_MAX;
 	}
-	if (bignum->max_digits > 0 && len < bignum->max_digits)
-		memset_pbuff(pbuff, '0', bignum->max_digits - len);
+	if (max_printed_digits > 0 && len < max_printed_digits)
+		memset_pbuff(pbuff, '0', max_printed_digits - len);
 }

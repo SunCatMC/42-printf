@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/04 20:59:20 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/10 23:18:03 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ typedef struct		s_bignum {
 	t_numlist			*most;
 	unsigned long long	most_num_len;
 	int					count;
-	int					max_digits;
 	int					most_len;
 	int					limit;
 }					t_bignum;
@@ -128,7 +127,8 @@ unsigned int		bignum_round_up(t_bignum *bignum, int digit_exp);
 unsigned int		bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 													unsigned long long num);
 void				bignum_mul_small(t_bignum *bignum, unsigned int num);
-void				printf_bignum(t_bignum 	*bignum, t_pbuff *pbuff);
+void				printf_bignum(t_bignum 	*bignum, int max_printed_digits,
+	t_pbuff *pbuff);
 void				malloc_fail(t_bigldbl *bigldbl);
 void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff);
 void				init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl);
