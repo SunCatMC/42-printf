@@ -21,7 +21,7 @@ static void		printf_digit(unsigned int digit, t_popts *opts, t_pbuff *pbuff)
 	else
 		putchar_pbuff(pbuff, digit - 10 + 'a');
 }
-
+/*
 static void		zero_case(unsigned int base, t_popts *opts, t_pbuff *pbuff)
 {
 	int len;
@@ -39,7 +39,7 @@ static void		zero_case(unsigned int base, t_popts *opts, t_pbuff *pbuff)
 	else if (opts->flags & P_PTR)
 		putmem_pbuff(pbuff, "0x", 2);
 }
-
+*/
 static t_pint	init_lens(unsigned long long num, unsigned int base,
 		t_popts *opts)
 {
@@ -84,13 +84,16 @@ void			printf_int(unsigned long long num, unsigned int base,
 {
 	t_pint pint;
 
-	if (opts->precision == 0 && num == 0)
-		return (zero_case(base, opts, pbuff));
+//	if (opts->precision == 0 && num == 0)
+//		return (zero_case(base, opts, pbuff));
 	pint = init_lens(num, base, opts);
-	if (!(opts->flags & F_ZERO))
+	if (opts->precision == 0 && num == 0)
+		--pint.length;
+	if (!(opts->flags & F_ZERO)
+						|| (opts->flags & P_NUM && opts->precision >= 0))
 		printf_width_pre(pint.length, opts, pbuff);
 	put_special(num, base, opts, pbuff);
-	if (opts->flags & F_ZERO)
+	if (opts->flags & F_ZERO && (!(opts->flags & P_NUM) || opts->precision < 0))
 		printf_width_pre(pint.length, opts, pbuff);
 	if (pint.len < pint.precision)
 		memset_pbuff(pbuff, '0', pint.precision - pint.len);
@@ -100,6 +103,7 @@ void			printf_int(unsigned long long num, unsigned int base,
 		num %= pint.num_len;
 		pint.num_len /= base;
 	}
-	printf_digit(num, opts, pbuff);
+	if (opts->precision != 0 || num != 0)
+		printf_digit(num, opts, pbuff);
 	printf_width_post(pint.length, opts, pbuff);
 }
