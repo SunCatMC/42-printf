@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/10 23:18:12 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/11 00:08:39 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,11 @@ void	init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 	{
 		i = exp < 0 ? 64 + -exp : 64;
 		bignum->limit = i / BN_MAX_DIGITS + 1;
-		if (bignum->limit > bignum->count)
-			bignum_add_numlst(bignum, 0);
 		i %= BN_MAX_DIGITS;
+		if (i != 0 && bignum->limit > bignum->count)
+			bignum_add_numlst(bignum, 0);
+		else if (i == 0)
+			i = BN_MAX_DIGITS;
 		while (--i > 0)
 		{
 			bignum->most_num_len *= 10;
