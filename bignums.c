@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/04 20:58:57 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/10 19:20:53 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ int				check_rounding(unsigned long long num_high_sub,
 		return (1);
 	else if (digit == 5)
 	{
-		if (num_low_sub != 0 || cur->next == bignum->least)
+		if (num_low_sub != 0 || cur->prev == bignum->least)
 			return (1);
 		else
 			return (num_high_sub % 2);
@@ -132,11 +132,11 @@ unsigned int	bignum_round_up(t_bignum *bignum, int digit_exp)
 	while (digit_exp-- > 0)
 		num_len *= 10;
 	num_high_sub = cur->num / num_len;
-	num_low_sub = num_len != 1 ? cur->num % num_len : cur->next->num;
+	num_low_sub = num_len != 1 ? cur->num % num_len : cur->prev->num;
 	digit = num_low_sub * 10 / num_len;
-	num_low_sub %= num_len / 10;
+	num_low_sub %= num_len != 1 ? num_len / 10 : BN_MAX_DIGITS;
 	if (check_rounding(num_high_sub, digit, num_low_sub,
-										num_len != 1 ? cur : cur->next, bignum))
+										num_len != 1 ? cur : cur->prev, bignum))
 		bignum_inc_num(bignum, cur, num_len);
 	return (0);
 }
