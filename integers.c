@@ -46,14 +46,15 @@ static t_pint	init_lens(unsigned long long num, unsigned int base,
 	t_pint pint;
 
 	pint.num_len = 1;
-	pint.len = 1;
+	pint.len = opts->precision == 0 && num == 0 ? 0 : 1;
 	while (num / pint.num_len >= base)
 	{
 		pint.num_len *= base;
 		++pint.len;
 	}
 	pint.precision = pint.len;
-	if (base == 8 && (opts->flags & F_SPECIAL) && num > 0)
+	if (base == 8 && (opts->flags & F_SPECIAL)
+							&& (num > 0 || (num == 0 && opts->precision == 0)))
 		++pint.precision;
 	if (opts->precision >= 0 && pint.precision < opts->precision)
 		pint.precision = opts->precision;
@@ -85,8 +86,6 @@ void			printf_int(unsigned long long num, unsigned int base,
 	t_pint pint;
 
 	pint = init_lens(num, base, opts);
-	if (opts->precision == 0 && num == 0)
-		--pint.length;
 	if (!(opts->flags & F_ZERO)
 						|| (opts->flags & P_NUM && opts->precision >= 0))
 		printf_width_pre(pint.length, opts, pbuff);
