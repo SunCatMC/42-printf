@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/10 19:20:53 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/10 21:26:03 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ unsigned int	bignum_round_up(t_bignum *bignum, int digit_exp)
 	num_low_sub %= num_len != 1 ? num_len / 10 : BN_MAX_DIGITS;
 	if (check_rounding(num_high_sub, digit, num_low_sub,
 										num_len != 1 ? cur : cur->prev, bignum))
-		bignum_inc_num(bignum, cur, num_len);
+		return (bignum_inc_num(bignum, cur, num_len));
 	return (0);
 }
 
@@ -152,10 +152,14 @@ unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 		cur->num += carry;
 		if (cur == bignum->most)
 		{
+			carry = 0;
 			if ((bignum->limit < 0 || bignum->limit < bignum->count)
 				&& (carry = numlst_get_carry(cur)) != 0)
+			{
 				bignum_add_numlst(bignum, carry);
-			else if (bignum->most->num >= bignum->most_num_len * 10)
+				return (0);
+			}
+			if (bignum->most->num >= bignum->most_num_len * 10)
 			{
 				carry = bignum->most->num / bignum->most_num_len;
 				bignum->most->num %= bignum->most_num_len * 10;
@@ -165,7 +169,7 @@ unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 		carry = numlst_get_carry(cur);
 		cur = cur->next;
 	}
-	return (carry);
+	return (0);
 }
 
 void			bignum_mul_small(t_bignum *bignum, unsigned int num)
