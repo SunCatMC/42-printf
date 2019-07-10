@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 22:28:53 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/10 18:24:26 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/10 23:14:59 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,25 +21,7 @@ static void		printf_digit(unsigned int digit, t_popts *opts, t_pbuff *pbuff)
 	else
 		putchar_pbuff(pbuff, digit - 10 + 'a');
 }
-/*
-static void		zero_case(unsigned int base, t_popts *opts, t_pbuff *pbuff)
-{
-	int len;
 
-	len = 0;
-	if (opts->width != 0)
-	{
-		len = base == 8 && (opts->flags & F_SPECIAL) ? 0 : 1;
-		printf_width_pre(len, opts, pbuff);
-		putchar_pbuff(pbuff, base == 8 && (opts->flags & F_SPECIAL) ? 0 : ' ');
-		printf_width_post(len, opts, pbuff);
-	}
-	else if (base == 8 && (opts->flags & F_SPECIAL))
-		putchar_pbuff(pbuff, '0');
-	else if (opts->flags & P_PTR)
-		putmem_pbuff(pbuff, "0x", 2);
-}
-*/
 static t_pint	init_lens(unsigned long long num, unsigned int base,
 		t_popts *opts)
 {
