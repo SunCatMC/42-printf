@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/11 00:38:41 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/11 19:16:07 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int				check_rounding(unsigned long long num_high_sub,
 		return (1);
 	else if (digit == 5)
 	{
-		if (num_low_sub != 0 || cur->prev == bignum->least)
+		if (num_low_sub != 0 || cur != bignum->least)
 			return (1);
 		else
 			return (num_high_sub % 2);
