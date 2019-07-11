@@ -14,6 +14,7 @@
 # define FT_PRINTF_H
 # define PRINTF_BUFF_SIZE 4096
 # include <stdarg.h>
+# include "libftprintf.h"
 
 enum				e_printf_flags {
 	F_SPECIAL = 1,
