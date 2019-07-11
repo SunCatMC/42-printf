@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/11 00:08:39 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/11 22:36:23 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 #include "libft.h"
 #include <stdlib.h>
 
-void	malloc_fail(t_bigldbl *bigldbl)
+void		malloc_fail(t_bigldbl *bigldbl)
 {
 	free_numlst(bigldbl->integ.least);
 	free_numlst(bigldbl->integ.most);
 	exit(0);
 }
 
-void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
+void		printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	char	buff[5];
 	char	*ptr;
@@ -47,7 +47,7 @@ void	printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_str(buff, opts, pbuff);
 }
 
-void	init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
+void		init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
 {
 	t_bignum			*bignum;
 	unsigned long long	int_part;
@@ -72,7 +72,21 @@ void	init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
 	mostnum_init_lens(bignum);
 }
 
-void	init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
+static void	clean_up_fract(t_bignum *bignum)
+{
+	t_numlist *cur;
+
+	cur = bignum->least;
+	while (cur->num == 0 && cur != bignum->most)
+	{
+		cur = cur->next;
+		--bignum->count;
+		--bignum->limit;
+	}
+	bignum->least = cur;
+}
+
+void		init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 {
 	t_bignum			*bignum;
 	unsigned long long	fract;
@@ -120,9 +134,10 @@ void	init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 		bignum->limit = bignum->count;
 		mostnum_init_lens(bignum);
 	}
+	clean_up_fract(bignum);
 }
 
-void	bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
+void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 {
 	unsigned int	carry;
 	int				i;
