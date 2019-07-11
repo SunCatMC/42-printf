@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/11 19:16:07 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/12 00:11:55 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,18 +152,14 @@ unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 		cur->num += carry;
 		if (cur == bignum->most)
 		{
-			carry = 0;
 			if ((bignum->limit < 0 || bignum->limit < bignum->count)
 				&& (carry = numlst_get_carry(cur)) != 0)
 			{
 				bignum_add_numlst(bignum, carry);
 				return (0);
 			}
-			if (bignum->most->num >= bignum->most_num_len * 10)
-			{
-				carry = bignum->most->num / bignum->most_num_len;
-				bignum->most->num %= bignum->most_num_len * 10;
-			}
+			carry = bignum->most->num / bignum->most_num_len;
+			bignum->most->num %= bignum->most_num_len * 10;
 			return (carry);
 		}
 		carry = numlst_get_carry(cur);
@@ -172,14 +168,25 @@ unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 	return (0);
 }
 
-void			bignum_mul_small(t_bignum *bignum, unsigned int num,
-														unsigned int count)
+void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 {
 	t_numlist			*cur;
 	unsigned long long	carry;
+	unsigned long long	mul;
+	int					i;
 
-	cur = bignum->least;
-	carry = 0;
+	i = 0;
+	while (i < count)
+	{
+		i = 0;
+		mul = 1;
+		while (i++ < count && mul <= )
+			mul *= num;
+		carry = 0;
+		cur = bignum->least;
+		while ()
+	}
+	/*
 	while (1)
 	{
 		cur->num = cur->num * num + carry;
@@ -190,6 +197,7 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num,
 	}
 	if (carry != 0)
 		bignum_add_numlst(bignum, carry);
+		*/
 }
 
 void			printf_bignum(t_bignum *bignum, int max_printed_digits,

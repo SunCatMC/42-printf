@@ -128,7 +128,7 @@ unsigned int		bignum_round_up(t_bignum *bignum, int digit_exp);
 unsigned int		bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 													unsigned long long num);
 void				bignum_mul_small(t_bignum *bignum, unsigned int num,
-	unsigned int count);
+	int count);
 void				printf_bignum(t_bignum 	*bignum, int max_printed_digits,
 	t_pbuff *pbuff);
 void				malloc_fail(t_bigldbl *bigldbl);
