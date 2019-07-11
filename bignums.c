@@ -172,7 +172,8 @@ unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 	return (0);
 }
 
-void			bignum_mul_small(t_bignum *bignum, unsigned int num)
+void			bignum_mul_small(t_bignum *bignum, unsigned int num,
+														unsigned int count)
 {
 	t_numlist			*cur;
 	unsigned long long	carry;
@@ -184,7 +185,7 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num)
 		cur->num = cur->num * num + carry;
 		carry = numlst_get_carry(cur);
 		if (cur == bignum->most)
-			break ;
+		break ;
 		cur = cur->next;
 	}
 	if (carry != 0)

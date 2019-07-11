@@ -63,12 +63,9 @@ void		init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
 			int_part >>= (64 - exp);
 	}
 	init_bignum(bignum, int_part);
-	while (exp-- > 64)
-	{
-		bignum_mul_small(bignum, 2);
-		if (bignum->least == NULL)
-			malloc_fail(bigldbl);
-	}
+	bignum_mul_small(bignum, 2, exp - 64);
+	if (bignum->least == NULL)
+		malloc_fail(bigldbl);
 	mostnum_init_lens(bignum);
 }
 
@@ -111,9 +108,7 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 		bignum->limit = 1;
 		return ;
 	}
-	i = exp < 0 ? 64 + -exp : 64;
-	while (i-- > 0)
-		bignum_mul_small(bignum, 5);
+	bignum_mul_small(bignum, 5, exp < 0 ? 64 + -exp : 64);
 	if (!(fract & FRACT_LAST_BIT) || exp < 0)
 	{
 		i = exp < 0 ? 64 + -exp : 64;
