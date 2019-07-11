@@ -134,7 +134,7 @@ unsigned int	bignum_round_up(t_bignum *bignum, int digit_exp)
 	num_low_sub = num_len != 1 ? cur->num % num_len : cur->prev->num;
 	digit = num_len != 1 ? num_low_sub * 10 / num_len
 											: num_low_sub / BN_NUM_LEN_MAX;
-	num_low_sub %= num_len != 1 ? num_len / 10 : BN_MAX_DIGITS;
+	num_low_sub %= num_len != 1 ? num_len / 10 : BN_NUM_LEN_MAX;
 	if (check_rounding(num_high_sub, digit, num_low_sub,
 										num_len != 1 ? cur : cur->prev, bignum))
 		return (bignum_inc_num(bignum, cur, num_len));
