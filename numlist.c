@@ -47,12 +47,7 @@ unsigned long long	numlst_get_carry(t_numlist *cur)
 {
 	unsigned long long carry;
 
-	if (cur->num > BN_NUM_MAX)
-	{
-		carry = cur->num / BN_NUM_LEN_LIM;
-		cur->num %= BN_NUM_LEN_LIM;
-	}
-	else
-		carry = 0;
+	carry = cur->num / BN_NUM_LEN_LIM;
+	cur->num %= BN_NUM_LEN_LIM;
 	return (carry);
 }
