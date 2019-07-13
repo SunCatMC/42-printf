@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/12 00:11:55 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/13 17:54:12 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 				bignum_add_numlst(bignum, carry);
 				return (0);
 			}
-			carry = bignum->most->num / bignum->most_num_len;
+			carry = bignum->most->num / (bignum->most_num_len * 10);
 			bignum->most->num %= bignum->most_num_len * 10;
 			return (carry);
 		}
@@ -173,31 +173,30 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 	t_numlist			*cur;
 	unsigned long long	carry;
 	unsigned long long	mul;
-	int					i;
 
-	i = 0;
-	while (i < count)
+	while (count > 0)
 	{
-		i = 0;
 		mul = 1;
-		while (i++ < count && mul <= )
+		while (count > 0 && mul * num < BN_MUL_MAX)
+		{
 			mul *= num;
-		carry = 0;
+			--count;
+		}
 		cur = bignum->least;
-		while ()
+		carry = 0;
+		while (1)
+		{
+			cur->num = cur->num * mul + carry;
+			carry = numlst_get_carry(cur);
+			if (cur == bignum->most)
+				break ;
+			cur = cur->next;
+		}
+		if (carry != 0)
+			bignum_add_numlst(bignum, carry);
+		if (bignum->least == NULL)
+			return ;
 	}
-	/*
-	while (1)
-	{
-		cur->num = cur->num * num + carry;
-		carry = numlst_get_carry(cur);
-		if (cur == bignum->most)
-		break ;
-		cur = cur->next;
-	}
-	if (carry != 0)
-		bignum_add_numlst(bignum, carry);
-		*/
 }
 
 void			printf_bignum(t_bignum *bignum, int max_printed_digits,

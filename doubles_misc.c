@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/11 22:36:23 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/13 17:54:22 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ void		init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
 			int_part >>= (64 - exp);
 	}
 	init_bignum(bignum, int_part);
-	bignum_mul_small(bignum, 2, exp - 64);
+	if (exp > 64)
+		bignum_mul_small(bignum, 2, exp - 64);
 	if (bignum->least == NULL)
 		malloc_fail(bigldbl);
 	mostnum_init_lens(bignum);
@@ -152,7 +153,7 @@ void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 	&& check_rounding(bigldbl->integ.least->num,
 	bigldbl->fract.most->num / bigldbl->fract.most_num_len,
 	bigldbl->fract.most->num, bigldbl->fract.most, &(bigldbl->fract)))
-		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1L);
+		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
 	if (carry != 0)
-		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1L);
+		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
 }
