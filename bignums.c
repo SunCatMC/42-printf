@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/13 17:54:12 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/13 18:59:21 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,15 +173,22 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 	t_numlist			*cur;
 	unsigned long long	carry;
 	unsigned long long	mul;
+	int					i;
 
+	i = 0;
 	while (count > 0)
 	{
-		mul = 1;
-		while (count > 0 && mul * num < BN_MUL_MAX)
+		if (i == 0 || i > count)
 		{
-			mul *= num;
-			--count;
+			mul = 1;
+			while (count > 0 && mul * num < BN_MUL_MAX)
+			{
+				mul *= num;
+				--count;
+			}
 		}
+		else
+			count -= i;
 		cur = bignum->least;
 		carry = 0;
 		while (1)

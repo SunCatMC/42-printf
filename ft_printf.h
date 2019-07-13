@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/13 17:54:33 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/13 18:59:31 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,11 @@ typedef struct		s_bigldbl {
 	t_bignum	fract;
 }					t_bigldbl;
 
-# define BN_MAX_DIGITS	11
-# define BN_NUM_MAX		99999999999
+# define BN_MAX_DIGITS	12
+# if BN_MAX_DIGITS < 10 || BN_MAX_DIGITS > 18
+#  error BN_MAX_DIGITS must be between 10 and 18
+# endif
+# define BN_NUM_MAX		999999999999999999
 # define BN_NUM_LEN_LIM	(BN_NUM_MAX + 1)
 # define BN_NUM_LEN_MAX	(BN_NUM_LEN_LIM / 10)
 # define BN_MUL_MAX		(0xFFFFFFFFFFFFFFFF / BN_NUM_LEN_LIM)
