@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/13 17:54:22 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/13 18:36:45 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 			fract <<= exp;
 		init_bignum(bignum, fract);
 	}
+	if (bignum->least == NULL)
+		malloc_fail(bigldbl);
 	bignum->most_num_len = 1;
 	bignum->most_len = 1;
 	if (bignum->least->num == 0 && bignum->least == bignum->most)
@@ -110,6 +112,8 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 		return ;
 	}
 	bignum_mul_small(bignum, 5, exp < 0 ? 64 + -exp : 64);
+	if (bignum->least == NULL)
+		malloc_fail(bigldbl);
 	if (!(fract & FRACT_LAST_BIT) || exp < 0)
 	{
 		i = exp < 0 ? 64 + -exp : 64;
@@ -118,7 +122,10 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 		if (i != 0 && bignum->limit > bignum->count)
 			bignum_add_numlst(bignum, 0);
 		else if (i == 0)
+		{
 			i = BN_MAX_DIGITS;
+			--bignum->limit;
+		}
 		while (--i > 0)
 		{
 			bignum->most_num_len *= 10;
@@ -130,6 +137,8 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
 		bignum->limit = bignum->count;
 		mostnum_init_lens(bignum);
 	}
+	if (bignum->least == NULL)
+		malloc_fail(bigldbl);
 	clean_up_fract(bignum);
 }
 
