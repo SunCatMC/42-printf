@@ -87,7 +87,7 @@ typedef struct		s_bigldbl {
 # if BN_MAX_DIGITS < 10 || BN_MAX_DIGITS > 18
 #  error BN_MAX_DIGITS must be between 10 and 18
 # endif
-# define BN_NUM_MAX		999999999999999999
+# define BN_NUM_MAX		999999999999
 # define BN_NUM_LEN_LIM	(BN_NUM_MAX + 1)
 # define BN_NUM_LEN_MAX	(BN_NUM_LEN_LIM / 10)
 # define BN_MUL_MAX		(0xFFFFFFFFFFFFFFFF / BN_NUM_LEN_LIM)
