@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/13 18:59:31 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/16 17:56:16 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,10 @@ typedef struct		s_bigldbl {
 # if BN_MAX_DIGITS < 10 || BN_MAX_DIGITS > 18
 #  error BN_MAX_DIGITS must be between 10 and 18
 # endif
+
+/*
+** number of digits in BN_NUM_MAX should be equal to BN_MAX_DIGITS
+*/
 # define BN_NUM_MAX		999999999999
 # define BN_NUM_LEN_LIM	(BN_NUM_MAX + 1)
 # define BN_NUM_LEN_MAX	(BN_NUM_LEN_LIM / 10)
@@ -119,7 +123,7 @@ void				printf_s_int(signed long long num, t_popts *opts,
 		t_pbuff *pbuff);
 void				printf_f_ldbl(long double num, t_popts *opts,
 		t_pbuff *pbuff);
-void 				free_numlst(t_numlist *lst);
+void				free_numlst(t_numlist *lst);
 void				del_numlst(t_numlist **lst);
 t_numlist			*new_numlst(unsigned long long num);
 unsigned long long	numlst_get_carry(t_numlist *cur);
@@ -133,7 +137,7 @@ unsigned int		bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 													unsigned long long num);
 void				bignum_mul_small(t_bignum *bignum, unsigned int num,
 	int count);
-void				printf_bignum(t_bignum 	*bignum, int max_printed_digits,
+void				printf_bignum(t_bignum *bignum, int max_printed_digits,
 	t_pbuff *pbuff);
 void				malloc_fail(t_bigldbl *bigldbl);
 void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff);
