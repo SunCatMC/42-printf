@@ -6,15 +6,16 @@
 #    By: htryndam <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/16 22:52:18 by htryndam          #+#    #+#              #
-#    Updated: 2019/07/16 20:21:37 by htryndam         ###   ########.fr        #
+#    Updated: 2019/07/16 22:04:07 by htryndam         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
 
 IDIR = includes
-SOURCES = ft_printf.c buffer.c optionals.c basic_types.c integers.c doubles.c \
-		  doubles_init.c doubles_misc.c numlist.c bignums.c misc.c
+SOURCES = ft_printf.c conversions.c buffer.c optionals.c basic_types.c \
+		  integers.c doubles.c doubles_init.c doubles_misc.c numlist.c \
+		  bignums.c misc.c
 
 SRC = $(SOURCES)
 

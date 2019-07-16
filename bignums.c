@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/16 21:26:22 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/17 00:48:53 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,8 +208,8 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 	}
 }
 
-void			printf_bignum(t_bignum *bignum, int max_printed_digits,
-																t_pbuff *pbuff)
+void			printf_bignum(t_bignum *bignum, int start,
+									int printed_len, t_pbuff *pbuff)
 {
 	t_numlist			*cur;
 	unsigned long long	num;
@@ -219,18 +219,19 @@ void			printf_bignum(t_bignum *bignum, int max_printed_digits,
 	cur = bignum->most;
 	num_len = bignum->most_num_len;
 	len = 0;
-	while (max_printed_digits < 0 || len < max_printed_digits)
+	(void)start;
+	while (printed_len < 0 || len < printed_len)
 	{
 		num = cur->num;
-		while (num_len >= 10 && (max_printed_digits < 0
-								|| len < max_printed_digits))
+		while (num_len >= 10 && (start + printed_len < 0
+								|| len < start + printed_len))
 		{
 			putchar_pbuff(pbuff, num / num_len + '0');
 			num %= num_len;
 			num_len /= 10;
 			++len;
 		}
-		if (max_printed_digits < 0 || len < max_printed_digits)
+		if (start + printed_len < 0 || len < start + printed_len)
 		{
 			++len;
 			putchar_pbuff(pbuff, num / num_len + '0');
@@ -240,6 +241,6 @@ void			printf_bignum(t_bignum *bignum, int max_printed_digits,
 		cur = cur->prev;
 		num_len = BN_NUM_LEN_MAX;
 	}
-	if (max_printed_digits > 0 && len < max_printed_digits)
-		memset_pbuff(pbuff, '0', max_printed_digits - len);
+	if (start + printed_len > 0 && len < start + printed_len)
+		memset_pbuff(pbuff, '0', printed_len - len);
 }

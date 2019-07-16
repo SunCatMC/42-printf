@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/16 21:26:39 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/17 00:49:49 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
 }
 
-int		printf_init_ldbl(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
+int			printf_init_ldbl(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	t_bigldbl *bigldbl;
 
@@ -95,23 +95,4 @@ int		printf_init_ldbl(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	if (bigldbl->fract.least == NULL)
 		malloc_fail(bigldbl);
 	return (1);
-}
-
-void	printf_bigldbl_fract(t_popts *opts, t_pbuff *pbuff)
-{
-	t_bignum	*bignum;
-	int			count;
-	int			max_printed_digits;
-
-	bignum = &(pbuff->bigldbl.fract);
-	max_printed_digits = opts->precision;
-	count = bignum->limit;
-	while (count-- > bignum->count && max_printed_digits >= BN_MAX_DIGITS)
-	{
-		memset_pbuff(pbuff, '0', BN_MAX_DIGITS);
-		max_printed_digits -= BN_MAX_DIGITS;
-	}
-	if (count > bignum->count)
-		return (memset_pbuff(pbuff, '0', max_printed_digits));
-	printf_bignum(bignum, max_printed_digits, pbuff);
 }
