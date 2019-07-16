@@ -6,11 +6,11 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/16 18:42:03 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/16 21:26:22 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "bignums.h"
 #include <stdlib.h>
 
 void			bignum_add_numlst(t_bignum *bignum, unsigned long long num)

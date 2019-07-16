@@ -6,15 +6,16 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/13 18:36:45 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/16 21:26:39 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "bignums.h"
 #include "ft_printf.h"
 #include "libft.h"
 #include <stdlib.h>
 
-void		malloc_fail(t_bigldbl *bigldbl)
+static void	malloc_fail(t_bigldbl *bigldbl)
 {
 	free_numlst(bigldbl->integ.least);
 	free_numlst(bigldbl->integ.most);
@@ -47,101 +48,6 @@ void		printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_str(buff, opts, pbuff);
 }
 
-void		init_bigldbl_integ(t_ldbl *ldbl, t_bigldbl *bigldbl)
-{
-	t_bignum			*bignum;
-	unsigned long long	int_part;
-	short				exp;
-
-	exp = ldbl->bin.exp - EXP_BIAS;
-	int_part = 0;
-	bignum = &(bigldbl->integ);
-	if (!(ldbl->bin.exp == 0 || exp <= 0))
-	{
-		int_part = ldbl->bin.fract;
-		if (exp < 64)
-			int_part >>= (64 - exp);
-	}
-	init_bignum(bignum, int_part);
-	if (exp > 64)
-		bignum_mul_small(bignum, 2, exp - 64);
-	if (bignum->least == NULL)
-		malloc_fail(bigldbl);
-	mostnum_init_lens(bignum);
-}
-
-static void	clean_up_fract(t_bignum *bignum)
-{
-	t_numlist *cur;
-
-	cur = bignum->least;
-	while (cur->num == 0 && cur != bignum->most)
-	{
-		cur = cur->next;
-		--bignum->count;
-		--bignum->limit;
-	}
-	bignum->least = cur;
-}
-
-void		init_bigldbl_fract(t_ldbl *ldbl, t_bigldbl *bigldbl)
-{
-	t_bignum			*bignum;
-	unsigned long long	fract;
-	short				exp;
-	int					i;
-
-	exp = ldbl->bin.exp - EXP_BIAS;
-	bignum = &(bigldbl->fract);
-	if (ldbl->bin.fract == 0 || exp >= 64)
-		init_bignum(bignum, 0);
-	else
-	{
-		fract = ldbl->bin.fract;
-		if (exp > 0)
-			fract <<= exp;
-		init_bignum(bignum, fract);
-	}
-	if (bignum->least == NULL)
-		malloc_fail(bigldbl);
-	bignum->most_num_len = 1;
-	bignum->most_len = 1;
-	if (bignum->least->num == 0 && bignum->least == bignum->most)
-	{
-		bignum->limit = 1;
-		return ;
-	}
-	bignum_mul_small(bignum, 5, exp < 0 ? 64 + -exp : 64);
-	if (bignum->least == NULL)
-		malloc_fail(bigldbl);
-	if (!(fract & FRACT_LAST_BIT) || exp < 0)
-	{
-		i = exp < 0 ? 64 + -exp : 64;
-		bignum->limit = i / BN_MAX_DIGITS + 1;
-		i %= BN_MAX_DIGITS;
-		if (i != 0 && bignum->limit > bignum->count)
-			bignum_add_numlst(bignum, 0);
-		else if (i == 0)
-		{
-			i = BN_MAX_DIGITS;
-			--bignum->limit;
-		}
-		while (--i > 0)
-		{
-			bignum->most_num_len *= 10;
-			++bignum->most_len;
-		}
-	}
-	else
-	{
-		bignum->limit = bignum->count;
-		mostnum_init_lens(bignum);
-	}
-	if (bignum->least == NULL)
-		malloc_fail(bigldbl);
-	clean_up_fract(bignum);
-}
-
 void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 {
 	unsigned int	carry;
@@ -166,4 +72,46 @@ void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
 	if (carry != 0)
 		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
+}
+
+int		printf_init_ldbl(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
+{
+	t_bigldbl *bigldbl;
+
+	if (ldbl->bin.exp == EXP_MAX)
+	{
+		printf_max_exp(ldbl, opts, pbuff);
+		return (0);
+	}
+	if (opts->precision < 0)
+		opts->precision = 6;
+	if (opts->width && (ldbl->bin.sign | (opts->flags & (F_SPACE | F_PLUS))))
+		--opts->width;
+	bigldbl = &(pbuff->bigldbl);
+	init_bigldbl_integ(ldbl, &bigldbl->integ);
+	if (bigldbl->integ.least == NULL)
+		malloc_fail(bigldbl);
+	init_bigldbl_fract(ldbl, &bigldbl->fract);
+	if (bigldbl->fract.least == NULL)
+		malloc_fail(bigldbl);
+	return (1);
+}
+
+void	printf_bigldbl_fract(t_popts *opts, t_pbuff *pbuff)
+{
+	t_bignum	*bignum;
+	int			count;
+	int			max_printed_digits;
+
+	bignum = &(pbuff->bigldbl.fract);
+	max_printed_digits = opts->precision;
+	count = bignum->limit;
+	while (count-- > bignum->count && max_printed_digits >= BN_MAX_DIGITS)
+	{
+		memset_pbuff(pbuff, '0', BN_MAX_DIGITS);
+		max_printed_digits -= BN_MAX_DIGITS;
+	}
+	if (count > bignum->count)
+		return (memset_pbuff(pbuff, '0', max_printed_digits));
+	printf_bignum(bignum, max_printed_digits, pbuff);
 }

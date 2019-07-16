@@ -6,11 +6,11 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/03 19:17:25 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/03 23:27:03 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/16 21:26:51 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "bignums.h"
 #include <stdlib.h>
 
 void				free_numlst(t_numlist *lst)
