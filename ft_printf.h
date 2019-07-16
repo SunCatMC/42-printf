@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 20:12:03 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/16 17:56:16 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/16 18:42:09 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ typedef struct		s_bigldbl {
 # endif
 
 /*
-** number of digits in BN_NUM_MAX should be equal to BN_MAX_DIGITS
+** number of digits in BN_NUM_MAX must be equal to BN_MAX_DIGITS
 */
 # define BN_NUM_MAX		999999999999
 # define BN_NUM_LEN_LIM	(BN_NUM_MAX + 1)

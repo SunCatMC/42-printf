@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/13 18:59:21 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/16 18:42:03 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,11 +180,13 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 	{
 		if (i == 0 || i > count)
 		{
+			i = 0;
 			mul = 1;
 			while (count > 0 && mul * num < BN_MUL_MAX)
 			{
 				mul *= num;
 				--count;
+				i++;
 			}
 		}
 		else
