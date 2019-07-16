@@ -18,7 +18,8 @@ static int	printf_f_int(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	t_bignum	*bignum;
 
 	bignum = &(pbuff->bigldbl.integ);
-	length = bignum->most_len + (bignum->count - 1) * 60 + opts->precision + ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
+	length = bignum->most_len + (bignum->count - 1) * 60 + opts->precision
+					+ ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
 	if (!(opts->flags & F_ZERO))
 		printf_width_pre(length, opts, pbuff);
 	printf_sign(ldbl->bin.sign, opts, pbuff);

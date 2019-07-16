@@ -34,11 +34,11 @@ void		printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 	{
 		ptr = buff;
 		if (ldbl->bin.sign)
-		*ptr = '-';
+			*ptr = '-';
 		else if (opts->flags & F_PLUS)
-		*ptr = '+';
+			*ptr = '+';
 		else if (opts->flags & F_SPACE)
-		*ptr = ' ';
+			*ptr = ' ';
 		else
 			--ptr;
 		++ptr;
@@ -156,7 +156,8 @@ void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 		if (digit_exp >= 0)
 			return ;
 		carry = bignum_round_up(&(bigldbl->fract), digit_exp);
-	} else if (digit_exp > 0)
+	}
+	else if (digit_exp > 0)
 		bignum_round_up(&(bigldbl->integ), digit_exp);
 	else if (bigldbl->fract.limit == bigldbl->fract.count
 	&& check_rounding(bigldbl->integ.least->num,

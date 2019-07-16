@@ -34,4 +34,3 @@ void	printf_sign(int is_neg, t_popts *opts, t_pbuff *pbuff)
 	else if (opts->flags & F_SPACE)
 		putchar_pbuff(pbuff, ' ');
 }
-

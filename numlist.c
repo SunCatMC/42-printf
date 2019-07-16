@@ -13,7 +13,7 @@
 #include "ft_printf.h"
 #include <stdlib.h>
 
-void 				free_numlst(t_numlist *lst)
+void				free_numlst(t_numlist *lst)
 {
 	t_numlist *tmp;
 
