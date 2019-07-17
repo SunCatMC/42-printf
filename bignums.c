@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/17 00:48:53 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/17 05:28:26 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,28 +219,44 @@ void			printf_bignum(t_bignum *bignum, int start,
 	cur = bignum->most;
 	num_len = bignum->most_num_len;
 	len = 0;
-	(void)start;
-	while (printed_len < 0 || len < printed_len)
+	if (start >= bignum->most_len)
 	{
-		num = cur->num;
-		while (num_len >= 10 && (start + printed_len < 0
-								|| len < start + printed_len))
+		start -= bignum->most_len;
+		num_len = BN_NUM_LEN_MAX;
+		if (cur == bignum->least)
+			start = -1;
+		cur = cur->prev;
+	}
+	while (start >= BN_MAX_DIGITS)
+	{
+		start -= BN_MAX_DIGITS;
+		if (cur == bignum->least)
+			start = -1;
+		cur = cur->prev;
+	}
+	while (start > 0)
+	{
+		--start;
+		num_len /= 10;
+	}
+	if (start >= 0)
+		num = cur->num % (num_len * 10);
+	while (start == 0 && (printed_len < 0 || len < printed_len))
+	{
+		while (num_len >= 1 && (printed_len < 0
+								|| len < printed_len))
 		{
+			++len;
 			putchar_pbuff(pbuff, num / num_len + '0');
 			num %= num_len;
 			num_len /= 10;
-			++len;
-		}
-		if (start + printed_len < 0 || len < start + printed_len)
-		{
-			++len;
-			putchar_pbuff(pbuff, num / num_len + '0');
 		}
 		if (cur == bignum->least)
 			break ;
 		cur = cur->prev;
 		num_len = BN_NUM_LEN_MAX;
+		num = cur->num;
 	}
-	if (start + printed_len > 0 && len < start + printed_len)
+	if (printed_len > 0 && len < printed_len)
 		memset_pbuff(pbuff, '0', printed_len - len);
 }
