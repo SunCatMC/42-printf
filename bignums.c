@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/17 21:46:52 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/18 00:12:51 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,15 +224,16 @@ void			printf_bignum(t_bignum *bignum, int use_saved,
 
 	cur = bignum->most;
 	num_len = use_saved ? bignum->saved_num_len : bignum->most_num_len;
-	if (num_len == 0)
+	while (num_len == 0 || (use_saved && cur->num == 0))
 	{
 		if (cur == bignum->least)
 		{
 			memset_pbuff(pbuff, '0', print_len > 0 ? print_len : 0);
 			return ;
 		}
+		if (!(use_saved && cur->num == 0) && num_len == 0)
+			num_len = BN_NUM_LEN_MAX;
 		cur = cur->prev;
-		num_len = BN_NUM_LEN_MAX;
 	}
 	num = num_len < bignum->most_num_len || cur != bignum->most
 									? cur->num % (num_len * 10) : cur->num;
