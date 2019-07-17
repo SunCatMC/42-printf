@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 19:09:52 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/16 21:26:09 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/17 21:47:02 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,10 @@ typedef struct		s_bignum {
 	t_numlist			*least;
 	t_numlist			*most;
 	unsigned long long	most_num_len;
-	int					count;
+	unsigned long long	saved_num_len;
 	int					most_len;
+	int					saved_len;
+	int					count;
 	int					limit;
 }					t_bignum;
 typedef struct		s_bigldbl {

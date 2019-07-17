@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/17 05:28:26 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/17 21:46:52 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ void			mostnum_init_lens(t_bignum *bignum)
 		bignum->most_num_len *= 10;
 		++bignum->most_len;
 	}
+	bignum->saved_num_len = bignum->most_num_len;
+	bignum->saved_len = bignum->most_len;
 }
 
 void			init_bignum(t_bignum *bignum, unsigned long long num)
@@ -70,6 +72,10 @@ void			init_bignum(t_bignum *bignum, unsigned long long num)
 	bignum_add_numlst(bignum, num);
 	if (temp > 0)
 		bignum_add_numlst(bignum, temp);
+	bignum->most_num_len = 1;
+	bignum->most_len = 1;
+	bignum->saved_num_len = 1;
+	bignum->saved_len = 1;
 }
 
 int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
@@ -208,8 +214,8 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 	}
 }
 
-void			printf_bignum(t_bignum *bignum, int start,
-									int printed_len, t_pbuff *pbuff)
+void			printf_bignum(t_bignum *bignum, int use_saved,
+									int print_len, t_pbuff *pbuff)
 {
 	t_numlist			*cur;
 	unsigned long long	num;
@@ -217,34 +223,24 @@ void			printf_bignum(t_bignum *bignum, int start,
 	int					len;
 
 	cur = bignum->most;
-	num_len = bignum->most_num_len;
-	len = 0;
-	if (start >= bignum->most_len)
+	num_len = use_saved ? bignum->saved_num_len : bignum->most_num_len;
+	if (num_len == 0)
 	{
-		start -= bignum->most_len;
+		if (cur == bignum->least)
+		{
+			memset_pbuff(pbuff, '0', print_len > 0 ? print_len : 0);
+			return ;
+		}
+		cur = cur->prev;
 		num_len = BN_NUM_LEN_MAX;
-		if (cur == bignum->least)
-			start = -1;
-		cur = cur->prev;
 	}
-	while (start >= BN_MAX_DIGITS)
+	num = num_len < bignum->most_num_len || cur != bignum->most
+									? cur->num % (num_len * 10) : cur->num;
+	len = 0;
+	while (print_len < 0 || len < print_len)
 	{
-		start -= BN_MAX_DIGITS;
-		if (cur == bignum->least)
-			start = -1;
-		cur = cur->prev;
-	}
-	while (start > 0)
-	{
-		--start;
-		num_len /= 10;
-	}
-	if (start >= 0)
-		num = cur->num % (num_len * 10);
-	while (start == 0 && (printed_len < 0 || len < printed_len))
-	{
-		while (num_len >= 1 && (printed_len < 0
-								|| len < printed_len))
+		while (num_len >= 1 && (print_len < 0
+								|| len < print_len))
 		{
 			++len;
 			putchar_pbuff(pbuff, num / num_len + '0');
@@ -257,6 +253,6 @@ void			printf_bignum(t_bignum *bignum, int start,
 		num_len = BN_NUM_LEN_MAX;
 		num = cur->num;
 	}
-	if (printed_len > 0 && len < printed_len)
-		memset_pbuff(pbuff, '0', printed_len - len);
+	if (print_len > 0 && len < print_len)
+		memset_pbuff(pbuff, '0', print_len - len);
 }

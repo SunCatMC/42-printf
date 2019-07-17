@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 19:03:35 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/17 00:49:55 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/17 21:46:57 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ unsigned int		bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 													unsigned long long num);
 void				bignum_mul_small(t_bignum *bignum, unsigned int num,
 	int count);
-void				printf_bignum(t_bignum *bignum, int start, int printed_len,
-	t_pbuff *pbuff);
+void				printf_bignum(t_bignum *bignum, int use_saved,
+	int print_len, t_pbuff *pbuff);
 void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff);
 int					printf_init_ldbl(t_ldbl *ldbl, t_popts *opts,
 	t_pbuff *pbuff);

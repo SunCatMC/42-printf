@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/17 05:28:37 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/17 21:46:53 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,9 @@ void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 static void	put_exp(int exp, t_popts *opts, t_pbuff *pbuff)
 {
 	putchar_pbuff(pbuff, opts->flags & P_LARGE ? 'E' : 'e');
-	opts->precision = 2;
-	opts->width = 0;
-	opts->flags = F_PLUS;
+	opts->precision = -1;
+	opts->width = 3;
+	opts->flags = F_PLUS | F_ZERO;
 	printf_s_int(exp, opts, pbuff);
 }
 
@@ -78,8 +78,7 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	t_bigldbl	*bigldbl;
 	int			exp;
 	t_bignum	*bignum;
-	int			len;
-	unsigned long long most_num_len;
+	unsigned long long num_len;
 
 	ldbl.num = num;
 	if (!printf_init_ldbl(&ldbl, opts, pbuff))
@@ -88,41 +87,29 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	length = 5 + opts->precision
 					+ ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
 	put_special(length, ldbl.bin.sign, opts, pbuff);
-	len = 0;
 	bignum = bigldbl->integ.most->num == 0 ? &bigldbl->fract : &bigldbl->integ;
-	most_num_len = bignum->most_num_len;
-	if (bigldbl->integ.most->num == 0)
-	{
-		if (bigldbl->fract.most->num == 0)
-			exp = 0;
-		else
-		{
-			exp = -1 - (bigldbl->fract.limit - bigldbl->fract.count)
-															* BN_MAX_DIGITS;
-			while (most_num_len >= bigldbl->fract.most->num)
-			{
-				++len;
-				most_num_len /= 10;
-			}
-			exp -= len;
-		}
-	}
+	num_len = bignum->saved_num_len;
+	if (bignum == &bigldbl->integ)
+		exp = (bignum->count - 1) * BN_MAX_DIGITS + bignum->most_len - 1;
+	else if (bignum->most->num == 0 && bignum->most == bignum->least)
+		exp = 0;
 	else
-		exp = (bigldbl->integ.count - 1) * BN_MAX_DIGITS
-				+ bigldbl->integ.most_len - 1;
+		exp = (bignum->count - bignum->limit - (bignum->most->num == 0 ? 1 : 0))
+			* BN_MAX_DIGITS + bignum->saved_len - bignum->most_len;
 	bigldbl_round_up(bigldbl, exp - opts->precision);
-	putchar_pbuff(pbuff, bignum->most->num / most_num_len + '0');
+	putchar_pbuff(pbuff, bignum->most->num / num_len + '0');
 	if (opts->precision || opts->flags & F_SPECIAL)
 		putchar_pbuff(pbuff, '.');
+	--bignum->saved_len;
+	bignum->saved_num_len /= 10;
 	if (bignum == &bigldbl->fract)
-		printf_bignum(bignum, len + 1, opts->precision, pbuff);
+		printf_bignum(bignum, 1, opts->precision, pbuff);
 	else
 	{
-		len = bignum->most_len - 1 + (bignum->count - 1) * BN_MAX_DIGITS;
-		if (opts->precision > len)
+		if (opts->precision > exp)
 		{
 			printf_bignum(bignum, 1, -1, pbuff);
-			printf_bigldbl_fract(opts->precision - len, pbuff);
+			printf_bigldbl_fract(opts->precision - exp, pbuff);
 		}
 		else
 			printf_bignum(bignum, 1, opts->precision, pbuff);

@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 20:19:01 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/16 21:24:51 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/17 21:46:55 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bignum *bignum)
 			fract <<= exp;
 		init_bignum(bignum, fract);
 	}
-	bignum->most_num_len = 1;
-	bignum->most_len = 1;
 	if (bignum->least == NULL
 				|| (bignum->least->num == 0 && bignum->least == bignum->most))
 	{
@@ -75,28 +73,23 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bignum *bignum)
 	bignum_mul_small(bignum, 5, exp < 0 ? 64 + -exp : 64);
 	if (bignum->least == NULL)
 		return ;
+	bignum->limit = bignum->count;
+	mostnum_init_lens(bignum);
 	if (!(fract & FRACT_LAST_BIT) || exp < 0)
 	{
 		i = exp < 0 ? 64 + -exp : 64;
 		bignum->limit = i / BN_MAX_DIGITS + 1;
 		i %= BN_MAX_DIGITS;
-		if (i != 0 && bignum->limit > bignum->count)
-			bignum_add_numlst(bignum, 0);
-		else if (i == 0)
+		if (i == 0)
 		{
 			i = BN_MAX_DIGITS;
 			--bignum->limit;
-		}
+		} else if (bignum->limit > bignum->count)
+			bignum_add_numlst(bignum, 0);
+		bignum->most_num_len = 1;
+		bignum->most_len = i;
 		while (--i > 0)
-		{
 			bignum->most_num_len *= 10;
-			++bignum->most_len;
-		}
-	}
-	else
-	{
-		bignum->limit = bignum->count;
-		mostnum_init_lens(bignum);
 	}
 	clean_up_fract(bignum);
 }
