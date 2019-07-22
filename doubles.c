@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/22 22:06:01 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/22 23:23:28 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,18 @@ static void	put_exp(int exp, t_popts *opts, t_pbuff *pbuff)
 	printf_s_int(exp, &opts_num, pbuff);
 }
 
+static int	get_exp(t_bigldbl *bigldbl)
+{
+	if (!bignum_iszero(&bigldbl->integ))
+		return (bignum_len(&bigldbl->integ) - 1);
+	else if (bignum_iszero(&bigldbl->fract))
+		return (0);
+	else
+		return (bignum->count - bignum->limit
+			- (bignum->most->num == 0 ? 1 : 0))
+			* BN_MAX_DIGITS + bignum->saved_len - bignum->most_len - 1);
+}
+
 void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 {
 	t_ldbl		ldbl;
@@ -89,13 +101,7 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	bigldbl = &(pbuff->bigldbl);
 	bignum = bigldbl->integ.most->num == 0 ? &bigldbl->fract : &bigldbl->integ;
 	num_len = bignum->saved_num_len;
-	if (bignum == &bigldbl->integ)
-		exp = (bignum->count - 1) * BN_MAX_DIGITS + bignum->most_len - 1;
-	else if (bignum_iszero(bignum))
-		exp = 0;
-	else
-		exp = (bignum->count - bignum->limit - (bignum->most->num == 0 ? 1 : 0))
-			* BN_MAX_DIGITS + bignum->saved_len - bignum->most_len - 1;
+	exp = get_exp(bigldbl);
 	length = 5 + (exp > 99 || exp < -99 ? 1 : 0) + opts->precision
 					+ ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
 	put_special(length, ldbl.bin.sign, opts, pbuff);
@@ -123,4 +129,16 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	}
 	put_exp(exp, opts, pbuff);
 	printf_width_post(length, opts, pbuff);
+}
+
+void		printf_g_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
+{
+	t_ldbl		ldbl;
+	int			length;
+	t_bigldbl	*bigldbl;
+
+	ldbl.num = num;
+	if (!printf_init_ldbl(&ldbl, opts, pbuff))
+		return ;
+	bigldbl = &(pbuff->bigldbl);
 }

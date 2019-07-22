@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 21:55:46 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/17 05:28:31 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/22 23:22:55 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ static void			ldbl_conversion(char ch, t_popts *opts, t_pbuff *pbuff,
 		printf_f_ldbl(num, opts, pbuff);
 	else if (ch == 'e' || ch == 'E')
 		printf_e_ldbl(num, opts, pbuff);
+	else if (ch == 'g' || ch == 'G')
+		printf_g_ldbl(num, opts, pbuff);
 }
 
 void				parse_conversion(const char **format, t_popts *opts,
