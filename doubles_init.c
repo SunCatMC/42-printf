@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 20:19:01 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/17 21:46:55 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/22 22:06:06 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,7 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bignum *bignum)
 			fract <<= exp;
 		init_bignum(bignum, fract);
 	}
-	if (bignum->least == NULL
-				|| (bignum->least->num == 0 && bignum->least == bignum->most))
+	if (bignum->least == NULL || bignum_iszero(bignum))
 	{
 		bignum->limit = 1;
 		return ;

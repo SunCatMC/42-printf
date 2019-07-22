@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/18 00:12:55 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/22 22:06:01 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ static void	printf_bigldbl_fract(int max_printed_digits, t_pbuff *pbuff)
 	}
 	if (count > bignum->count)
 		return (memset_pbuff(pbuff, '0', max_printed_digits));
-	printf_bignum(bignum, 0, max_printed_digits, pbuff);
+	memset_pbuff(pbuff, '0',
+						printf_bignum(bignum, 0, max_printed_digits, pbuff));
 }
 
 void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
@@ -52,7 +53,7 @@ void		printf_f_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	bigldbl = &pbuff->bigldbl;
 	bigldbl_round_up(bigldbl, -opts->precision);
 	integ = &bigldbl->integ;
-	length = integ->most_len + (integ->count - 1) * 60 + opts->precision
+	length = bignum_len(integ) + opts->precision
 					+ ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
 	put_special(length, ldbl.bin.sign, opts, pbuff);
 	printf_bignum(integ, 0, -1, pbuff);
@@ -90,7 +91,7 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	num_len = bignum->saved_num_len;
 	if (bignum == &bigldbl->integ)
 		exp = (bignum->count - 1) * BN_MAX_DIGITS + bignum->most_len - 1;
-	else if (bignum->most->num == 0 && bignum->most == bignum->least)
+	else if (bignum_iszero(bignum))
 		exp = 0;
 	else
 		exp = (bignum->count - bignum->limit - (bignum->most->num == 0 ? 1 : 0))
@@ -107,7 +108,8 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	--bignum->saved_len;
 	bignum->saved_num_len /= 10;
 	if (bignum == &bigldbl->fract)
-		printf_bignum(bignum, 1, opts->precision, pbuff);
+		memset_pbuff(pbuff, '0',
+							printf_bignum(bignum, 1, opts->precision, pbuff));
 	else
 	{
 		if (opts->precision > exp)
@@ -116,7 +118,8 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 			printf_bigldbl_fract(opts->precision - exp, pbuff);
 		}
 		else
-			printf_bignum(bignum, 1, opts->precision, pbuff);
+			memset_pbuff(pbuff, '0',
+							printf_bignum(bignum, 1, opts->precision, pbuff));
 	}
 	put_exp(exp, opts, pbuff);
 	printf_width_post(length, opts, pbuff);

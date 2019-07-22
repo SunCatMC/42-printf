@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/18 00:12:51 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/22 22:05:57 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,17 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 	}
 }
 
-void			printf_bignum(t_bignum *bignum, int use_saved,
+int			bignum_len(t_bignum *bignum)
+{
+	return (bignum->most_len + (bignum->count - 1) * BN_MAX_DIGITS);
+}
+
+int			bignum_iszero(t_bignum *bignum)
+{
+	return (bignum->most == 0 && bignum->most == bignum->least);
+}
+
+int			printf_bignum(t_bignum *bignum, int use_saved,
 									int print_len, t_pbuff *pbuff)
 {
 	t_numlist			*cur;
@@ -227,10 +237,7 @@ void			printf_bignum(t_bignum *bignum, int use_saved,
 	while (num_len == 0 || (use_saved && cur->num == 0))
 	{
 		if (cur == bignum->least)
-		{
-			memset_pbuff(pbuff, '0', print_len > 0 ? print_len : 0);
-			return ;
-		}
+			return (print_len > 0 ? print_len : 0);
 		if (!(use_saved && cur->num == 0) && num_len == 0)
 			num_len = BN_NUM_LEN_MAX;
 		cur = cur->prev;
@@ -254,6 +261,5 @@ void			printf_bignum(t_bignum *bignum, int use_saved,
 		num_len = BN_NUM_LEN_MAX;
 		num = cur->num;
 	}
-	if (print_len > 0 && len < print_len)
-		memset_pbuff(pbuff, '0', print_len - len);
+	return (print_len > 0 && len < print_len ? print_len - len : 0);
 }
