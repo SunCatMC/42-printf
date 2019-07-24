@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/22 22:05:57 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/24 18:18:58 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,10 +158,12 @@ unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 		cur->num += carry;
 		if (cur == bignum->most)
 		{
-			if ((bignum->limit < 0 || bignum->limit < bignum->count)
-				&& (carry = numlst_get_carry(cur)) != 0)
+			if ((bignum->limit < 0 || bignum->limit < bignum->count))
 			{
-				bignum_add_numlst(bignum, carry);
+				if ((carry = numlst_get_carry(cur)) != 0)
+					bignum_add_numlst(bignum, carry);
+				if (bignum->limit < 0)
+					mostnum_init_lens(bignum);
 				return (0);
 			}
 			carry = bignum->most->num / (bignum->most_num_len * 10);
@@ -221,7 +223,7 @@ int			bignum_len(t_bignum *bignum)
 
 int			bignum_iszero(t_bignum *bignum)
 {
-	return (bignum->most == 0 && bignum->most == bignum->least);
+	return (bignum->most->num == 0 && bignum->most == bignum->least);
 }
 
 int			printf_bignum(t_bignum *bignum, int use_saved,
