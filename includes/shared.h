@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 19:09:52 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/24 20:22:50 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 00:38:52 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ enum				e_printf_length {
 typedef struct		s_num_bin {
 	unsigned long long	fract:64;
 	unsigned short		exp:15;
-	unsigned char		sign:1;
+	unsigned short		sign:1;
 }					t_num_bin;
 typedef union		u_ldbl {
 	long double		num;
@@ -60,6 +60,7 @@ typedef struct		s_bignum {
 	int					saved_len;
 	int					count;
 	int					limit;
+	short				drop_trailing_zeroes:1;
 }					t_bignum;
 typedef struct		s_bigldbl {
 	t_bignum	integ;

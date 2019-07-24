@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 19:03:35 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/22 22:05:59 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 00:38:48 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void				bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp);
 int					check_rounding(unsigned long long num_high_sub,
 	unsigned int digit, unsigned long long num_low_sub, t_numlist *cur,
 	t_bignum *bignum);
-int					bignum_len(t_bignum *bignum);
+void				clean_up_fract(t_bignum *bignum);
+int					bignum_len(t_bignum *bignum, int zero_case);
 int					bignum_iszero(t_bignum *bignum);
 #endif

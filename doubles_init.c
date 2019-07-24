@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 20:19:01 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/22 22:06:06 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 00:38:45 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void		init_bigldbl_integ(t_ldbl *ldbl, t_bignum *bignum)
 		mostnum_init_lens(bignum);
 }
 
-static void	clean_up_fract(t_bignum *bignum)
+void		clean_up_fract(t_bignum *bignum)
 {
 	t_numlist *cur;
 

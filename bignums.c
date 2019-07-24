@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/24 20:22:47 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 00:38:40 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,10 +216,12 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 	}
 }
 
-int			bignum_len(t_bignum *bignum)
+int			bignum_len(t_bignum *bignum, int zero_case)
 {
 	int count;
 
+	if (zero_case && bignum_iszero(bignum))
+		return (0);
 	count = bignum->limit < 0 ? bignum->count : bignum->limit;
 	return (bignum->most_len + (count - 1) * BN_MAX_DIGITS);
 }

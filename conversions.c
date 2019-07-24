@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 21:55:46 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/22 23:22:55 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 00:38:42 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void				parse_conversion(const char **format, t_popts *opts,
 		printf_ptr((unsigned long long)va_arg(*argptr, void *), opts, pbuff);
 	else if (ch == 'i' || ch == 'd')
 		printf_s_int(get_s_num(opts, argptr), opts, pbuff);
-	else if (ft_strchr("fFeE", ch))
+	else if (ft_strchr("fFeEgG", ch))
 		ldbl_conversion(ch, opts, pbuff, argptr);
 	else if (ft_strchr("buoxX", ch))
 		u_int_conversion(ch, opts, pbuff, argptr);

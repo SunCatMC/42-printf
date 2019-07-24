@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/17 00:49:49 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 00:38:46 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
 	if (carry != 0)
 		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
+	clean_up_fract(&bigldbl->fract);
 }
 
 int			printf_init_ldbl(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
