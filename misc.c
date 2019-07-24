@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 00:24:58 by htryndam          #+#    #+#             */
-/*   Updated: 2019/06/26 01:05:35 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/24 20:22:56 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ void	printf_width_post(int len, t_popts *opts, t_pbuff *pbuff)
 		memset_pbuff(pbuff, ' ', opts->width - len);
 }
 
-void	printf_sign(int is_neg, t_popts *opts, t_pbuff *pbuff)
+void	printf_sign(t_popts *opts, t_pbuff *pbuff)
 {
-	if (is_neg)
+	if (opts->flags & P_NEGATIVE)
 		putchar_pbuff(pbuff, '-');
 	else if (opts->flags & F_PLUS)
 		putchar_pbuff(pbuff, '+');
