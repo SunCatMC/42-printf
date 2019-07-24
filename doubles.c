@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/22 22:06:01 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/24 18:19:00 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,10 +96,15 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	else
 		exp = (bignum->count - bignum->limit - (bignum->most->num == 0 ? 1 : 0))
 			* BN_MAX_DIGITS + bignum->saved_len - bignum->most_len - 1;
+	bigldbl_round_up(bigldbl, exp - opts->precision);
+	if (bignum == &bigldbl->integ && num_len != bignum->saved_num_len)
+	{
+		num_len = bignum->saved_num_len;
+		++exp;
+	}
 	length = 5 + (exp > 99 || exp < -99 ? 1 : 0) + opts->precision
 					+ ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
 	put_special(length, ldbl.bin.sign, opts, pbuff);
-	bigldbl_round_up(bigldbl, exp - opts->precision);
 	putchar_pbuff(pbuff, (bignum->most->num == 0
 		&& bignum->most != bignum->least ? bignum->most->prev->num
 		: bignum->most->num) / num_len + '0');
