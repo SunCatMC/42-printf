@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 19:09:52 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/25 00:38:52 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 19:44:10 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,7 @@ enum				e_printf_flags {
 	P_SIGNED = 64,
 	P_LARGE = 128,
 	P_NUM = 256,
-	P_PTR = 512,
-	P_DBL_G = 1024
+	P_PTR = 512
 };
 enum				e_printf_length {
 	L_CHAR,
@@ -60,7 +59,6 @@ typedef struct		s_bignum {
 	int					saved_len;
 	int					count;
 	int					limit;
-	short				drop_trailing_zeroes:1;
 }					t_bignum;
 typedef struct		s_bigldbl {
 	t_bignum	integ;

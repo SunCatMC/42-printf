@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/16 19:03:35 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/25 00:38:48 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 19:44:06 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ void				bignum_add_numlst(t_bignum *bignum, unsigned long long num);
 void				mostnum_init_lens(t_bignum *bignum);
 void				init_bignum(t_bignum *bignum, unsigned long long num);
 int					bignum_find_numlst(t_bignum *bignum, t_numlist **result,
-															int digit_exp);
+	int digit_exp);
 unsigned int		bignum_round_up(t_bignum *bignum, int digit_exp);
 unsigned int		bignum_inc_num(t_bignum *bignum, t_numlist *cur,
-													unsigned long long num);
+	unsigned long long num);
 void				bignum_mul_small(t_bignum *bignum, unsigned int num,
 	int count);
-int				printf_bignum(t_bignum *bignum, int use_saved,
+int					printf_bignum(t_bignum *bignum, int use_saved,
 	int print_len, t_pbuff *pbuff);
 void				printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff);
 int					printf_init_ldbl(t_ldbl *ldbl, t_popts *opts,
@@ -58,6 +58,7 @@ int					check_rounding(unsigned long long num_high_sub,
 	unsigned int digit, unsigned long long num_low_sub, t_numlist *cur,
 	t_bignum *bignum);
 void				clean_up_fract(t_bignum *bignum);
-int					bignum_len(t_bignum *bignum, int zero_case);
+int					bignum_len(t_bignum *bignum);
+int					bignum_len_g(t_bignum *bignum, int precision);
 int					bignum_iszero(t_bignum *bignum);
 #endif

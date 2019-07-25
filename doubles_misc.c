@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 22:51:34 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/25 00:38:46 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 19:43:56 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,18 +51,10 @@ void		printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 {
 	unsigned int	carry;
-	int				i;
 
 	carry = 0;
 	if (digit_exp < 0)
-	{
-		i = bigldbl->fract.count;
-		while (i++ < bigldbl->fract.limit && digit_exp < 0)
-			digit_exp += BN_MAX_DIGITS;
-		if (digit_exp >= 0)
-			return ;
 		carry = bignum_round_up(&(bigldbl->fract), digit_exp);
-	}
 	else if (digit_exp > 0)
 		bignum_round_up(&(bigldbl->integ), digit_exp);
 	else if (bigldbl->fract.limit == bigldbl->fract.count

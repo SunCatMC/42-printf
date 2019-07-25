@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/25 00:38:40 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/25 19:43:52 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,19 @@ int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
 															int digit_exp)
 {
 	t_numlist	*cur;
+	int			i;
 
+	if (bignum->limit > 0)
+	{
+		i = bignum->count;
+		while (i++ < bignum->limit && digit_exp < 0)
+			digit_exp += BN_MAX_DIGITS;
+		if (digit_exp >= 0)
+		{
+			*result = NULL;
+			return (0);
+		}
+	}
 	if (digit_exp >= 0)
 	{
 		cur = bignum->least;
@@ -216,14 +228,66 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 	}
 }
 
-int			bignum_len(t_bignum *bignum, int zero_case)
+int			bignum_len(t_bignum *bignum)
 {
-	int count;
+	int		count;
 
-	if (zero_case && bignum_iszero(bignum))
-		return (0);
-	count = bignum->limit < 0 ? bignum->count : bignum->limit;
+	if (bignum->limit < 0)
+		count = bignum->count;
+	else
+		count = bignum->limit;
 	return (bignum->most_len + (count - 1) * BN_MAX_DIGITS);
+}
+
+int			bignum_len_g(t_bignum *bignum, int precision)
+{
+	int					len;
+	int					sub_len;
+	t_numlist			*cur;
+	unsigned long long	num;
+
+	if (bignum_iszero(bignum) || (precision <= 0 && bignum->limit >= 0))
+		return (0);
+	len = bignum_len(bignum);
+	if (bignum->limit < 0 && precision >= 0)
+		return (len);
+	if (precision > 0 && len > precision)
+		len = precision;
+	else if (len <= 0)
+		return (0);
+	sub_len = bignum_find_numlst(bignum, &cur, -len);
+	if (cur == NULL)
+		return (0);
+	precision = (cur == bignum->most
+						? bignum->most_len : BN_MAX_DIGITS) - sub_len;
+	num = cur->num;
+	while (num != 0 && sub_len-- > 0)
+		num /= 10;
+	if (num == 0)
+	{
+		if (cur == bignum->most)
+			return (0);
+		len -= precision;
+		cur = cur->next;
+		while (cur->num == 0)
+		{
+			if (cur == bignum->most)
+				return (0);
+			cur = cur->next;
+			len -= BN_MAX_DIGITS;
+		}
+		num = cur->num;
+		sub_len = cur == bignum->most ? bignum->most_len : BN_MAX_DIGITS;
+	}
+	else
+		sub_len = precision;
+	len -= sub_len;
+	while (sub_len > 0 && num % 10 == 0)
+	{
+		num /= 10;
+		--sub_len;
+	}
+	return (len + sub_len);
 }
 
 int			bignum_iszero(t_bignum *bignum)
