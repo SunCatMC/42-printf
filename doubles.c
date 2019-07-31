@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/25 19:43:54 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/31 22:38:10 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,8 +164,10 @@ static void printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 	len_integ = bignum_len_g(&bigldbl->integ, -1);
 	if (opts->flags & F_SPECIAL)
 		len_fract = opts->precision - len_integ;
-	else
+	else if (exp >= -4 && exp < opts->precision)
 		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - len_integ);
+	else
+		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - exp);
 	if (exp >= -4 && exp < opts->precision)
 	{
 		opts->precision -= len_integ;
@@ -173,9 +175,18 @@ static void printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 			opts->precision = len_fract;
 		return (printf_f_bigldbl(bigldbl, opts, pbuff));
 	}
-	if (opts->precision > len_fract + len_integ)
-			opts->precision = len_fract + len_integ;
 	--opts->precision;
+	if (!(opts->flags & F_SPECIAL))
+	{
+		if (len_fract != 0)
+			opts->precision = len_fract + exp - 1;
+		else
+		{
+			len_integ = bignum_len_g(&bigldbl->integ, exp) - 1;
+			if (len_integ < opts->precision)
+				opts->precision = len_integ;
+		}
+	}
 	printf_e_bigldbl(bigldbl, exp, opts, pbuff);
 }
 
@@ -206,7 +217,7 @@ void		printf_g_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	if (exp >= -4 && exp < opts->precision)
 		bigldbl_round_up(bigldbl, -len_fract);
 	else
-		bigldbl_round_up(bigldbl, len_fract != 0 ? len_fract
-									: bignum_len_g(&bigldbl->integ, exp));
+		bigldbl_round_up(bigldbl, len_fract != 0 ? -len_fract + 1
+							: len_integ - bignum_len_g(&bigldbl->integ, exp));
 	printf_g_bigldbl(bigldbl, opts, pbuff);
 }

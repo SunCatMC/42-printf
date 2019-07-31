@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 13:26:17 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/25 19:43:52 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/07/31 22:38:07 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,13 +243,14 @@ int			bignum_len_g(t_bignum *bignum, int precision)
 {
 	int					len;
 	int					sub_len;
+	int					tmp;
 	t_numlist			*cur;
 	unsigned long long	num;
 
 	if (bignum_iszero(bignum) || (precision <= 0 && bignum->limit >= 0))
 		return (0);
 	len = bignum_len(bignum);
-	if (bignum->limit < 0 && precision >= 0)
+	if (bignum->limit < 0 && precision < 0)
 		return (len);
 	if (precision > 0 && len > precision)
 		len = precision;
@@ -258,7 +259,7 @@ int			bignum_len_g(t_bignum *bignum, int precision)
 	sub_len = bignum_find_numlst(bignum, &cur, -len);
 	if (cur == NULL)
 		return (0);
-	precision = (cur == bignum->most
+	tmp = (cur == bignum->most
 						? bignum->most_len : BN_MAX_DIGITS) - sub_len;
 	num = cur->num;
 	while (num != 0 && sub_len-- > 0)
@@ -267,7 +268,7 @@ int			bignum_len_g(t_bignum *bignum, int precision)
 	{
 		if (cur == bignum->most)
 			return (0);
-		len -= precision;
+		len -= tmp;
 		cur = cur->next;
 		while (cur->num == 0)
 		{
@@ -280,7 +281,7 @@ int			bignum_len_g(t_bignum *bignum, int precision)
 		sub_len = cur == bignum->most ? bignum->most_len : BN_MAX_DIGITS;
 	}
 	else
-		sub_len = precision;
+		sub_len = tmp;
 	len -= sub_len;
 	while (sub_len > 0 && num % 10 == 0)
 	{
