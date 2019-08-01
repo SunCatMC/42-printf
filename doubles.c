@@ -6,7 +6,7 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/08/01 10:51:37 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/08/01 12:14:14 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,11 +164,12 @@ static int	bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
 	exp = get_exp(bigldbl);
 	len_integ = bignum_len_g(&bigldbl->integ, -1);
 	if (opts->flags & F_SPECIAL)
-		len_fract = opts->precision - len_integ;
+		len_fract = opts->precision - len_integ
+						- (exp >= -4 && exp < opts->precision ? 0 : exp + 1);
 	else if (exp >= -4 && exp < opts->precision)
 		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - len_integ);
 	else
-		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - exp);
+		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - exp - 1);
 	if (exp >= -4 && exp < opts->precision)
 	{
 		return (-len_fract);
