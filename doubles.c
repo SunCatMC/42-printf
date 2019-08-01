@@ -6,12 +6,13 @@
 /*   By: htryndam <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 18:35:57 by htryndam          #+#    #+#             */
-/*   Updated: 2019/07/31 22:38:10 by htryndam         ###   ########.fr       */
+/*   Updated: 2019/08/01 10:51:37 by htryndam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "bignums.h"
 #include "ft_printf.h"
+#include <stdio.h>
 
 static void	put_special(int length, t_popts *opts, t_pbuff *pbuff)
 {
@@ -154,7 +155,7 @@ void		printf_e_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	printf_e_bigldbl(bigldbl, exp, opts, pbuff);
 }
 
-static void printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
+static int	bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
 {
 	int			len_integ;
 	int			len_fract;
@@ -170,23 +171,29 @@ static void printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - exp);
 	if (exp >= -4 && exp < opts->precision)
 	{
-		opts->precision -= len_integ;
-		if (opts->precision > len_fract)
-			opts->precision = len_fract;
+		return (-len_fract);
+	}
+	return (len_fract != 0 ? -len_fract
+							: len_integ - bignum_len_g(&bigldbl->integ, exp));
+}
+
+static void printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
+{
+	int exp;
+	int edge;
+
+	exp = get_exp(bigldbl);
+	edge = bigldbl_g_edge_exp(bigldbl, opts);
+	if (exp >= -4 && exp < opts->precision)
+	{
+		if (exp > 0)
+			opts->precision -= exp;
+		if (edge != 0)
+			opts->precision = -edge;
 		return (printf_f_bigldbl(bigldbl, opts, pbuff));
 	}
-	--opts->precision;
-	if (!(opts->flags & F_SPECIAL))
-	{
-		if (len_fract != 0)
-			opts->precision = len_fract + exp - 1;
-		else
-		{
-			len_integ = bignum_len_g(&bigldbl->integ, exp) - 1;
-			if (len_integ < opts->precision)
-				opts->precision = len_integ;
-		}
-	}
+	if (exp - edge >= 0 && opts->precision > exp - edge)
+		opts->precision = exp - edge;
 	printf_e_bigldbl(bigldbl, exp, opts, pbuff);
 }
 
@@ -194,9 +201,6 @@ void		printf_g_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 {
 	t_ldbl		ldbl;
 	t_bigldbl	*bigldbl;
-	int			len_integ;
-	int			len_fract;
-	int			exp;
 
 	ldbl.num = num;
 	if (ldbl.bin.sign)
@@ -206,18 +210,7 @@ void		printf_g_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	if (!printf_init_ldbl(&ldbl, opts, pbuff))
 		return ;
 	bigldbl = &(pbuff->bigldbl);
-	exp = get_exp(bigldbl);
-	len_integ = bignum_len_g(&bigldbl->integ, -1);
-	if (opts->flags & F_SPECIAL)
-		len_fract = opts->precision - len_integ;
-	else if (exp >= -4 && exp < opts->precision)
-		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - len_integ);
-	else
-		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - exp);
-	if (exp >= -4 && exp < opts->precision)
-		bigldbl_round_up(bigldbl, -len_fract);
-	else
-		bigldbl_round_up(bigldbl, len_fract != 0 ? -len_fract + 1
-							: len_integ - bignum_len_g(&bigldbl->integ, exp));
+	bigldbl_round_up(bigldbl, bigldbl_g_edge_exp(bigldbl, opts));
 	printf_g_bigldbl(bigldbl, opts, pbuff);
+
 }
