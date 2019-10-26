@@ -259,15 +259,25 @@ int			bignum_len_g(t_bignum *bignum, int precision)
 	sub_len = bignum_find_numlst(bignum, &cur, -len);
 	if (cur == NULL)
 		return (0);
-	tmp = (cur == bignum->most
+	tmp = 0;
+	if (cur->num == 0 && cur == bignum->most && cur != bignum->least)
+	{
+		cur = cur->prev;
+		len += bignum->most_len;
+		tmp = bignum->saved_len;
+	}
+	else
+	{
+		tmp = (cur == bignum->most
 						? bignum->most_len : BN_MAX_DIGITS) - sub_len;
+	}
 	num = cur->num;
 	while (num != 0 && sub_len-- > 0)
 		num /= 10;
 	if (num == 0)
 	{
 		if (cur == bignum->most)
-			return (0);
+				return (0);
 		len -= tmp;
 		cur = cur->next;
 		while (cur->num == 0)
