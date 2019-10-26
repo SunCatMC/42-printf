@@ -49,4 +49,4 @@ debug: fclean
 	@$(MAKE) -C $(LIBDIR) debug
 	@gcc $(CFLAGS) $(DFLAGS) -I $(IDIR) -I $(LIBDIR) -c $(SRC)
 	@ar rc $(NAME) $(addprefix $(LIBDIR)/,$(LIBOBJ)) \
-			$(addsuffix .o,$(basename $(SRC)))
+			$(addsuffix .o,$(basename $(SOURCES)))
