@@ -42,7 +42,7 @@ static void	printf_bigldbl_fract(int max_printed_digits, t_pbuff *pbuff)
 			memset_pbuff(pbuff, '0', ret);
 }
 
-static void printf_f_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
+static void	printf_f_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	int			length;
 	t_bignum	*integ;
@@ -97,7 +97,7 @@ static int	get_exp(t_bigldbl *bigldbl)
 			* BN_MAX_DIGITS + bn->saved_len - bn->most_len - 1);
 }
 
-static void printf_e_bigldbl(t_bigldbl *bigldbl,
+static void	printf_e_bigldbl(t_bigldbl *bigldbl,
 									int exp, t_popts *opts, t_pbuff *pbuff)
 {
 	int			length;
@@ -176,7 +176,7 @@ static int	bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
 							: len_integ - bignum_len_g(&bigldbl->integ, exp));
 }
 
-static void printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
+static void	printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	int exp;
 	int edge;
@@ -211,5 +211,4 @@ void		printf_g_ldbl(long double num, t_popts *opts, t_pbuff *pbuff)
 	bigldbl = &(pbuff->bigldbl);
 	bigldbl_round_up(bigldbl, bigldbl_g_edge_exp(bigldbl, opts));
 	printf_g_bigldbl(bigldbl, opts, pbuff);
-
 }

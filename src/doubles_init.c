@@ -48,6 +48,32 @@ void		clean_up_fract(t_bignum *bignum)
 	bignum->least = cur;
 }
 
+static void	multiply_fract(unsigned long long fract, t_bignum *bignum)
+{
+	bignum_mul_small(bignum, 5, exp < 0 ? 64 + -exp : 64);
+	if (bignum->least == NULL)
+		return ;
+	bignum->limit = bignum->count;
+	mostnum_init_lens(bignum);
+	if (!(fract & FRACT_LAST_BIT) || exp < 0)
+	{
+		i = exp < 0 ? 64 + -exp : 64;
+		bignum->limit = i / BN_MAX_DIGITS + 1;
+		i %= BN_MAX_DIGITS;
+		if (i == 0)
+		{
+			i = BN_MAX_DIGITS;
+			--bignum->limit;
+		}
+		else if (bignum->limit > bignum->count)
+			bignum_add_numlst(bignum, 0);
+		bignum->most_num_len = 1;
+		bignum->most_len = i;
+		while (--i > 0)
+			bignum->most_num_len *= 10;
+	}
+}
+
 void		init_bigldbl_fract(t_ldbl *ldbl, t_bignum *bignum)
 {
 	unsigned long long	fract;
@@ -69,26 +95,8 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bignum *bignum)
 		bignum->limit = 1;
 		return ;
 	}
-	bignum_mul_small(bignum, 5, exp < 0 ? 64 + -exp : 64);
+	multiply_fract(fract, bignum);
 	if (bignum->least == NULL)
 		return ;
-	bignum->limit = bignum->count;
-	mostnum_init_lens(bignum);
-	if (!(fract & FRACT_LAST_BIT) || exp < 0)
-	{
-		i = exp < 0 ? 64 + -exp : 64;
-		bignum->limit = i / BN_MAX_DIGITS + 1;
-		i %= BN_MAX_DIGITS;
-		if (i == 0)
-		{
-			i = BN_MAX_DIGITS;
-			--bignum->limit;
-		} else if (bignum->limit > bignum->count)
-			bignum_add_numlst(bignum, 0);
-		bignum->most_num_len = 1;
-		bignum->most_len = i;
-		while (--i > 0)
-			bignum->most_num_len *= 10;
-	}
 	clean_up_fract(bignum);
 }

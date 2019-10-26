@@ -118,15 +118,18 @@ int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
 	return (digit_exp);
 }
 
+/*
+** flag - cur != bignum->least
+*/
+  
 int				check_rounding(unsigned long long num_high_sub,
-	unsigned int digit, unsigned long long num_low_sub, t_numlist *cur,
-	t_bignum *bignum)
+			unsigned int digit, unsigned long long num_low_sub, int flag)
 {
 	if (digit > 5)
 		return (1);
 	else if (digit == 5)
 	{
-		if (num_low_sub != 0 || cur != bignum->least)
+		if (num_low_sub != 0 || flag)
 			return (1);
 		else
 			return (num_high_sub % 2);
@@ -154,7 +157,7 @@ unsigned int	bignum_round_up(t_bignum *bignum, int digit_exp)
 											: num_low_sub / BN_NUM_LEN_MAX;
 	num_low_sub %= num_len != 1 ? num_len / 10 : BN_NUM_LEN_MAX;
 	if (check_rounding(num_high_sub, digit, num_low_sub,
-										num_len != 1 ? cur : cur->prev, bignum))
+							(num_len != 1 ? cur : cur->prev) != bignum->least))
 		return (bignum_inc_num(bignum, cur, num_len));
 	return (0);
 }

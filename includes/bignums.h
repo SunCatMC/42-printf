@@ -55,8 +55,7 @@ void				init_bigldbl_integ(t_ldbl *ldbl, t_bignum *bignum);
 void				init_bigldbl_fract(t_ldbl *ldbl, t_bignum *bignum);
 void				bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp);
 int					check_rounding(unsigned long long num_high_sub,
-	unsigned int digit, unsigned long long num_low_sub, t_numlist *cur,
-	t_bignum *bignum);
+	unsigned int digit, unsigned long long num_low_sub, int flag);
 void				clean_up_fract(t_bignum *bignum);
 int					bignum_len(t_bignum *bignum);
 int					bignum_len_g(t_bignum *bignum, int precision);

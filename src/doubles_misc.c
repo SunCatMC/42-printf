@@ -51,20 +51,23 @@ void		printf_max_exp(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
 void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 {
 	unsigned int	carry;
+	t_bignum		*fract;
+	t_bignum		*integ;
 
 	carry = 0;
+	fract = &(bigldbl->fract);
+	integ = &(bigldbl->integ);
 	if (digit_exp < 0)
-		carry = bignum_round_up(&(bigldbl->fract), digit_exp);
+		carry = bignum_round_up(fract, digit_exp);
 	else if (digit_exp > 0)
-		bignum_round_up(&(bigldbl->integ), digit_exp);
-	else if (bigldbl->fract.limit == bigldbl->fract.count
-	&& check_rounding(bigldbl->integ.least->num,
-	bigldbl->fract.most->num / bigldbl->fract.most_num_len,
-	bigldbl->fract.most->num, bigldbl->fract.most, &(bigldbl->fract)))
-		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
+		bignum_round_up(integ, digit_exp);
+	else if (fract->limit == fract->count && check_rounding(integ->least->num,
+			fract->most->num / fract->most_num_len, fract->most->num,
+			fract->most != fract->least))
+	bignum_inc_num(integ, integ->least, 1ul);
 	if (carry != 0)
-		bignum_inc_num(&(bigldbl->integ), bigldbl->integ.least, 1ul);
-	clean_up_fract(&bigldbl->fract);
+		bignum_inc_num(integ, integ->least, 1ul);
+	clean_up_fract(fract);
 }
 
 int			printf_init_ldbl(t_ldbl *ldbl, t_popts *opts, t_pbuff *pbuff)
