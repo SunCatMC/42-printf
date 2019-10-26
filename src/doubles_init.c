@@ -48,8 +48,11 @@ void		clean_up_fract(t_bignum *bignum)
 	bignum->least = cur;
 }
 
-static void	multiply_fract(unsigned long long fract, t_bignum *bignum)
+static void	multiply_fract(unsigned long long fract, short exp,
+													t_bignum *bignum)
 {
+	int		i;
+
 	bignum_mul_small(bignum, 5, exp < 0 ? 64 + -exp : 64);
 	if (bignum->least == NULL)
 		return ;
@@ -78,7 +81,6 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bignum *bignum)
 {
 	unsigned long long	fract;
 	short				exp;
-	int					i;
 
 	exp = ldbl->bin.exp - EXP_BIAS;
 	if (ldbl->bin.fract == 0 || exp >= 64)
@@ -95,7 +97,7 @@ void		init_bigldbl_fract(t_ldbl *ldbl, t_bignum *bignum)
 		bignum->limit = 1;
 		return ;
 	}
-	multiply_fract(fract, bignum);
+	multiply_fract(fract, exp, bignum);
 	if (bignum->least == NULL)
 		return ;
 	clean_up_fract(bignum);
