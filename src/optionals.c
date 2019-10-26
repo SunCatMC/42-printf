@@ -73,39 +73,49 @@ static int	parse_flags(char ch, t_popts *opts)
 	return (res);
 }
 
+static int 	parse_numbers(const char **fmt, t_popts *opts, va_list *argptr)
+{
+	int res;
+
+	res = 1;
+	if (ft_isdigit(**fmt))
+		opts->width = simple_atoi_skip(fmt);
+	else if (**fmt == '*')
+	{
+		opts->width = va_arg(*argptr, int);
+		if (opts->width < 0)
+		{
+			opts->width = -opts->width;
+			opts->flags |= F_LEFT;
+		}
+	}
+	else if (**fmt == '.')
+	{
+		opts->precision = 0;
+		++*fmt;
+		if (ft_isdigit(**fmt))
+			opts->precision = simple_atoi_skip(fmt);
+		else if (**fmt == '*')
+			opts->precision = va_arg(*argptr, int);
+		else
+			--*fmt;
+	}
+	else
+		res = 0;
+	return (res);
+}
+
 void		parse_optionals(const char **fmt, t_popts *opts, va_list *argptr)
 {
 	opts->width = 0;
 	opts->flags = 0;
 	opts->precision = -1;
 	opts->length = L_INT;
-	while (1)
+	while (**fmt != '\0')
 	{
 		if (!parse_flags(**fmt, opts) && !parse_length(**fmt, opts))
 		{
-			if (ft_isdigit(**fmt))
-				opts->width = simple_atoi_skip(fmt);
-			else if (**fmt == '*')
-			{
-				opts->width = va_arg(*argptr, int);
-				if (opts->width < 0)
-				{
-					opts->width = -opts->width;
-					opts->flags |= F_LEFT;
-				}
-			}
-			else if (**fmt == '.')
-			{
-				opts->precision = 0;
-				++*fmt;
-				if (ft_isdigit(**fmt))
-					opts->precision = simple_atoi_skip(fmt);
-				else if (**fmt == '*')
-					opts->precision = va_arg(*argptr, int);
-				else
-					--*fmt;
-			}
-			else
+			if (!parse_numbers(fmt, opts, argptr))
 				return ;
 		}
 		++*fmt;
