@@ -16,8 +16,8 @@ IDIR = includes
 SOURCES = ft_printf.c conversions.c buffer.c optionals.c basic_types.c \
 		  integers.c doubles.c doubles_init.c doubles_misc.c numlist.c \
 		  bignums.c misc.c
-
-SRC = $(SOURCES)
+SRCDIR = src
+SRC = $(addprefix $(SRCDIR)/,$(SOURCES))
 
 LIBNAME = ft
 LIBDIR = libft
@@ -33,7 +33,7 @@ $(NAME):
 	@$(MAKE) -C $(LIBDIR)
 	@gcc $(CFLAGS) -I $(IDIR) -I $(LIBDIR) -c $(SRC)
 	@ar rc $(NAME) $(addprefix $(LIBDIR)/,$(LIBOBJ)) \
-			$(addsuffix .o,$(basename $(SRC)))
+			$(addsuffix .o,$(basename $(SOURCES)))
 
 clean:
 	@$(MAKE) -C $(LIBDIR) clean
