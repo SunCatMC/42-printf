@@ -19,12 +19,20 @@ static void	printf_base(const char *format, t_pbuff *pbuff,
 	char	*ptr;
 	t_popts	opts;
 
-	while ((ptr = ft_strchr(format, '%')))
+	while ((ptr = ft_strchrs(format, "%{")))
 	{
 		putmem_pbuff(pbuff, format, ptr - format);
-		format = ++ptr;
-		parse_optionals(&format, &opts, argptr);
-		parse_conversion(&format, &opts, pbuff, argptr);
+		format = ptr + 1;
+		if (*ptr == '%')
+		{
+			parse_optionals(&format, &opts, argptr);
+			parse_conversion(&format, &opts, pbuff, argptr);
+		}
+		else if (*ptr == '{')
+		{
+			if (!parse_colors())
+				putchar_pbuff(pbuff, '{');
+		}
 	}
 	putstr_pbuff(pbuff, format);
 }
