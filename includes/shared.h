@@ -13,7 +13,7 @@
 #ifndef SHARED_H
 # define SHARED_H
 # define PRINTF_BUFF_SIZE 4096
-
+;
 enum				e_printf_flags {
 	F_SPECIAL = 1,
 	F_LEFT = 2,
@@ -24,7 +24,7 @@ enum				e_printf_flags {
 	P_SIGNED = 64,
 	P_LARGE = 128,
 	P_NUM = 256,
-	P_PTR = 512
+	P_PTR = 512,
 };
 enum				e_printf_length {
 	L_CHAR,
@@ -32,7 +32,7 @@ enum				e_printf_length {
 	L_INT,
 	L_LONG,
 	L_LONGLONG,
-	L_LONGDOUBLE
+	L_LONGDOUBLE,
 };
 
 typedef struct		s_num_bin {

@@ -29,10 +29,7 @@ static void	printf_base(const char *format, t_pbuff *pbuff,
 			parse_conversion(&format, &opts, pbuff, argptr);
 		}
 		else if (*ptr == '{')
-		{
-			if (!parse_colors())
-				putchar_pbuff(pbuff, '{');
-		}
+			parse_colors(pbuff, &format);
 	}
 	putstr_pbuff(pbuff, format);
 }
