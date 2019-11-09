@@ -160,20 +160,25 @@ static int	bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
 	int			len_integ;
 	int			len_fract;
 	int			exp;
+	t_bignum	*fract;
+	t_bignum	*integ;
 
 	exp = get_exp(bigldbl);
-	len_integ = bignum_len_g(&bigldbl->integ, -1);
+	fract = &bigldbl->fract;
+	integ = &bigldbl->integ;
+	len_integ = bignum_len_g(integ, -1);
 	if (opts->flags & F_SPECIAL)
 		len_fract = opts->precision - len_integ
-						- (exp >= -4 && exp < opts->precision ? 0 : exp + 1);
+						- (exp >= -4 && exp < opts->precision ? 0 : exp);
 	else if (exp >= -4 && exp < opts->precision)
-		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - len_integ);
+		len_fract = 1 + bignum_len_g(fract, opts->precision
+			- len_integ + 1 + (fract->most->num == 0 ? fract->most_len : 0));
 	else
-		len_fract = bignum_len_g(&bigldbl->fract, opts->precision - exp);
+		len_fract = bignum_len_g(fract, opts->precision - exp);
 	if (exp >= -4 && exp < opts->precision)
-		return (-len_fract);
+		return (-len_fract - (fract->most_len - fract->saved_len));
 	return (len_fract != 0 ? -len_fract
-							: len_integ - bignum_len_g(&bigldbl->integ, exp));
+							: len_integ - bignum_len_g(integ, exp));
 }
 
 static void	printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)

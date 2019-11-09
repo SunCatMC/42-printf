@@ -51,3 +51,13 @@ unsigned long long	numlst_get_carry(t_numlist *cur)
 	cur->num %= BN_NUM_LEN_LIM;
 	return (carry);
 }
+
+unsigned long long	get_numlen(int len)
+{
+	unsigned long long numlen;
+
+	numlen = 1L;
+	while (len-- > 0)
+		numlen *= 10L;
+	return (numlen);
+}

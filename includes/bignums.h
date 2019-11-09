@@ -36,6 +36,7 @@ void				free_numlst(t_numlist *lst);
 void				del_numlst(t_numlist **lst);
 t_numlist			*new_numlst(unsigned long long num);
 unsigned long long	numlst_get_carry(t_numlist *cur);
+unsigned long long	get_numlen(int len);
 void				bignum_add_numlst(t_bignum *bignum, unsigned long long num);
 void				mostnum_init_lens(t_bignum *bignum);
 void				init_bignum(t_bignum *bignum, unsigned long long num);
