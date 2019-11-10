@@ -193,7 +193,7 @@ static void	printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 		if (edge >= 0 && edge < exp)
 			opts->precision = edge;
 		else if (exp > 0)
-			opts->precision -= exp;
+			opts->precision -= exp + 1;
 		else
 			opts->precision = -edge;
 		return (printf_f_bigldbl(bigldbl, opts, pbuff));
