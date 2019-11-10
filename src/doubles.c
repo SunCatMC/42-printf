@@ -171,10 +171,10 @@ static int	bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
 		len_fract = opts->precision - len_integ
 						- (exp >= -4 && exp < opts->precision ? 0 : exp);
 	else if (exp >= -4 && exp < opts->precision)
-		len_fract = 1 + bignum_len_g(fract, opts->precision
-			- len_integ + 1 + (fract->most->num == 0 ? fract->most_len : 0));
+		len_fract = bignum_len_g(fract, opts->precision
+			- len_integ + (fract->most->num == 0 ? fract->most_len : 0));
 	else
-		len_fract = bignum_len_g(fract, opts->precision - exp);
+		len_fract = bignum_len_g(fract, opts->precision + -exp);
 	if (exp >= -4 && exp < opts->precision)
 		return (-len_fract - (fract->most_len - fract->saved_len));
 	return (len_fract != 0 ? -len_fract

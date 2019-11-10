@@ -57,7 +57,7 @@ unsigned long long	get_numlen(int len)
 	unsigned long long numlen;
 
 	numlen = 1L;
-	while (len-- > 0)
+	while (--len > 0)
 		numlen *= 10L;
 	return (numlen);
 }

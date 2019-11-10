@@ -242,41 +242,23 @@ int			bignum_len(t_bignum *bignum)
 	return (bignum->most_len + (count - 1) * BN_MAX_DIGITS);
 }
 
-int			bignum_len_g(t_bignum *bignum, int precision)
+static int	bignum_g_cut_zeroes(t_bignum *bignum, int len)
 {
-	int					len;
-	int					sub_len;
 	t_numlist			*cur;
 	unsigned long long	num;
+	int					tmp;
 
-	if (bignum_iszero(bignum) || (precision <= 0 && bignum->limit >= 0))
-		return (0);
-	len = bignum_len(bignum);
-	if (bignum->limit < 0 && precision < 0)
-		return (len);
-	if (len > precision)
-		len = precision;
-	if (len <= 0)
-		return (0);
-	sub_len = bignum->most_len - bignum->saved_len;
-	if (bignum->most->num == 0)
-		sub_len += BN_MAX_DIGITS;
-	sub_len = bignum_find_numlst(bignum, &cur, -len - sub_len);
+	tmp = bignum_find_numlst(bignum, &cur, -len);
 	if (cur == NULL)
 		return (0);
-	if (bignum->limit >= 0)
-		sub_len = BN_MAX_DIGITS - sub_len;
-	num = cur->num / get_numlen(sub_len);
-	while (num == 0 && len > 0)
+	num = cur->num / get_numlen(tmp);
+	tmp = BN_MAX_DIGITS - tmp;
+	while (num == 0 && len > 0 && cur != bignum->most)
 	{
-		if (cur == bignum->most)
-			return (0);
 		cur = cur->next;
-		if (cur == bignum->most && num == 0)
-			return (0);
 		num = cur->num;
-		len -= sub_len;
-		sub_len = BN_MAX_DIGITS;
+		len -= tmp;
+		tmp = BN_MAX_DIGITS;
 	}
 	while (len > 0 && num % 10 == 0)
 	{
@@ -284,6 +266,22 @@ int			bignum_len_g(t_bignum *bignum, int precision)
 		num /= 10;
 	}
 	return (len > 0 ? len : 0);
+}
+
+int			bignum_len_g(t_bignum *bignum, int precision)
+{
+	int			len;
+
+	if (bignum_iszero(bignum) || (precision <= 0 && bignum->limit < 0))
+		return (0);
+	len = bignum_len(bignum);
+	if (precision < 0 && bignum->limit < 0)
+		return (len);
+	if (len > precision)
+		len = precision;
+	if (len <= 0)
+		return (0);
+	return (bignum_g_cut_zeroes(bignum, len));
 }
 
 int			bignum_iszero(t_bignum *bignum)
