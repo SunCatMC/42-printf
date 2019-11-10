@@ -13,20 +13,6 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-static int	simple_atoi_skip(const char **str)
-{
-	int	num;
-
-	num = 0;
-	while (ft_isdigit(**str))
-	{
-		num = num * 10 + **str - '0';
-		++*str;
-	}
-	--*str;
-	return (num);
-}
-
 static int	parse_length(char ch, t_popts *opts)
 {
 	int res;
@@ -73,7 +59,19 @@ static int	parse_flags(char ch, t_popts *opts)
 	return (res);
 }
 
-static int 	parse_numbers(const char **fmt, t_popts *opts, va_list *argptr)
+static void	parse_precision(const char **fmt, t_popts *opts, va_list *argptr)
+{
+	opts->precision = 0;
+	++*fmt;
+	if (ft_isdigit(**fmt))
+		opts->precision = simple_atoi_skip(fmt);
+	else if (**fmt == '*')
+		opts->precision = va_arg(*argptr, int);
+	else
+		--*fmt;
+}
+
+static int	parse_numbers(const char **fmt, t_popts *opts, va_list *argptr)
 {
 	int res;
 
@@ -90,16 +88,7 @@ static int 	parse_numbers(const char **fmt, t_popts *opts, va_list *argptr)
 		}
 	}
 	else if (**fmt == '.')
-	{
-		opts->precision = 0;
-		++*fmt;
-		if (ft_isdigit(**fmt))
-			opts->precision = simple_atoi_skip(fmt);
-		else if (**fmt == '*')
-			opts->precision = va_arg(*argptr, int);
-		else
-			--*fmt;
-	}
+		parse_precision(fmt, opts, argptr);
 	else
 		res = 0;
 	return (res);

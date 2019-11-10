@@ -64,7 +64,7 @@ void		bigldbl_round_up(t_bigldbl *bigldbl, int digit_exp)
 	else if (fract->limit == fract->count && check_rounding(integ->least->num,
 			fract->most->num / fract->most_num_len, fract->most->num,
 			fract->most != fract->least))
-	bignum_inc_num(integ, integ->least, 1ul);
+		bignum_inc_num(integ, integ->least, 1ul);
 	if (carry != 0)
 		bignum_inc_num(integ, integ->least, 1ul);
 	clean_up_fract(fract);

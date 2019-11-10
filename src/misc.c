@@ -34,3 +34,17 @@ void	printf_sign(t_popts *opts, t_pbuff *pbuff)
 	else if (opts->flags & F_SPACE)
 		putchar_pbuff(pbuff, ' ');
 }
+
+int		simple_atoi_skip(const char **str)
+{
+	int	num;
+
+	num = 0;
+	while (ft_isdigit(**str))
+	{
+		num = num * 10 + **str - '0';
+		++*str;
+	}
+	--*str;
+	return (num);
+}

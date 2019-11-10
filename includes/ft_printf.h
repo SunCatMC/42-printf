@@ -19,6 +19,7 @@ void	parse_conversion(const char **format, t_popts *opts, t_pbuff *pbuff,
 	va_list *argptr);
 void	parse_optionals(const char **format, t_popts *opts, va_list *argptr);
 void	parse_colors(t_pbuff *pbuff, const char **fmt);
+int		simple_atoi_skip(const char **str);
 void	printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff);
 void	printf_width_post(int len, t_popts *opts, t_pbuff *pbuff);
 void	printf_sign(t_popts *opts, t_pbuff *pbuff);
