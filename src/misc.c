@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+#include "libft.h"
 
 void	printf_width_pre(int len, t_popts *opts, t_pbuff *pbuff)
 {
