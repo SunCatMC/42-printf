@@ -190,7 +190,9 @@ static void	printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 	edge = bigldbl_g_edge_exp(bigldbl, opts);
 	if (exp >= -4 && exp < opts->precision)
 	{
-		if (exp > 0)
+		if (edge >= 0 && edge < exp)
+			opts->precision = edge;
+		else if (exp > 0)
 			opts->precision -= exp;
 		else
 			opts->precision = -edge;

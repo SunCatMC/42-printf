@@ -272,7 +272,7 @@ int			bignum_len_g(t_bignum *bignum, int precision)
 {
 	int			len;
 
-	if (bignum_iszero(bignum) || (precision <= 0 && bignum->limit < 0))
+	if (bignum_iszero(bignum) || (precision <= 0 && bignum->limit >= 0))
 		return (0);
 	len = bignum_len(bignum);
 	if (precision < 0 && bignum->limit < 0)
