@@ -15,8 +15,8 @@ NAME = libftprintf.a
 IDIR = includes
 SOURCES = ft_printf.c conversions.c buffer.c optionals.c basic_types.c \
 		  integers.c doubles.c doubles_init.c doubles_misc.c numlist.c \
-		  bignums.c bignums_init.c bignums_math.c bignums_misc.c colors.c \
-		  misc.c
+		  bignums.c bignums_init.c bignums_math.c bignums_misc.c bignums_g.c \
+		  colors.c misc.c
 SRCDIR = src
 SRC = $(addprefix $(SRCDIR)/,$(SOURCES))
 
