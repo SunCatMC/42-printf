@@ -26,6 +26,7 @@ enum				e_printf_flags {
 	P_NUM = 256,
 	P_PTR = 512,
 };
+
 enum				e_printf_length {
 	L_CHAR,
 	L_SHORT,

@@ -3,7 +3,8 @@
 
 /*
 ** !!! All colors must end with } !!!
-*/ 
+*/
+
 char *g_color_codes[] = {
 	"black}",
 	"red}",
