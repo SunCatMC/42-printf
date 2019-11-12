@@ -168,7 +168,7 @@ static int	bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
 	integ = &bigldbl->integ;
 	len_integ = bignum_len_g(integ, -1);
 	if (opts->flags & F_SPECIAL)
-		len_fract = opts->precision - len_integ
+		len_fract = opts->precision - len_integ - 1
 						- (exp >= -4 && exp < opts->precision ? 0 : exp);
 	else if (exp >= -4 && exp < opts->precision)
 		len_fract = bignum_len_g(fract, opts->precision
