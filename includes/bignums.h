@@ -37,6 +37,18 @@ void				del_numlst(t_numlist **lst);
 t_numlist			*new_numlst(unsigned long long num);
 unsigned long long	numlst_get_carry(t_numlist *cur);
 unsigned long long	get_numlen(int len);
+void				put_special(int length, t_popts *opts, t_pbuff *pbuff);
+void				put_exp(int exp, t_popts *opts, t_pbuff *pbuff);
+int					get_exp(t_bigldbl *bigldbl);
+void				printf_bigldbl_fract(int max_printed_digits,
+	t_pbuff *pbuff);
+void				printf_f_bigldbl(t_bigldbl *bigldbl, t_popts *opts,
+	t_pbuff *pbuff);
+void				printf_e_bigldbl(t_bigldbl *bigldbl, int exp,
+	t_popts *opts, t_pbuff *pbuff);
+void				printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts,
+	t_pbuff *pbuff);
+int					bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts);
 void				bignum_add_numlst(t_bignum *bignum, unsigned long long num);
 void				mostnum_init_lens(t_bignum *bignum);
 void				init_bignum(t_bignum *bignum, unsigned long long num);

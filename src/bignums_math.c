@@ -1,7 +1,6 @@
 #include "bignums.h"
 #include <stdlib.h>
 
-
 unsigned int	bignum_round_up(t_bignum *bignum, int digit_exp)
 {
 	t_numlist			*cur;
