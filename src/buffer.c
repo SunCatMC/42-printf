@@ -65,6 +65,8 @@ void	putmem_pbuff(t_pbuff *pbuff, const char *mem, int size)
 {
 	int		len;
 
+	if (size == 0)
+		return ;
 	while (size >= (len = PRINTF_BUFF_SIZE - pbuff->size))
 	{
 		ft_memcpy(&pbuff->buff[pbuff->size], mem, len);

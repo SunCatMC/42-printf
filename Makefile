@@ -22,6 +22,7 @@ SRC = $(addprefix $(SRCDIR)/,$(SOURCES))
 
 LIBNAME = ft
 LIBDIR = libft
+LIBIDIR = libft/includes
 LIBFILE = libft.a
 LIBOBJ = *.o
 
@@ -32,7 +33,7 @@ all: $(NAME)
 
 $(NAME):
 	@$(MAKE) -C $(LIBDIR)
-	@gcc $(CFLAGS) -I $(IDIR) -I $(LIBDIR) -c $(SRC)
+	@gcc $(CFLAGS) -I $(IDIR) -I $(LIBIDIR) -c $(SRC)
 	@ar rc $(NAME) $(addprefix $(LIBDIR)/,$(LIBOBJ)) \
 			$(addsuffix .o,$(basename $(SOURCES)))
 
@@ -48,6 +49,6 @@ re: fclean all
 
 debug: fclean
 	@$(MAKE) -C $(LIBDIR) debug
-	@gcc $(CFLAGS) $(DFLAGS) -I $(IDIR) -I $(LIBDIR) -c $(SRC)
+	@gcc $(CFLAGS) $(DFLAGS) -I $(IDIR) -I $(LIBIDIR) -c $(SRC)
 	@ar rc $(NAME) $(addprefix $(LIBDIR)/,$(LIBOBJ)) \
 			$(addsuffix .o,$(basename $(SOURCES)))
