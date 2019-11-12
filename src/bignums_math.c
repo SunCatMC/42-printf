@@ -55,10 +55,30 @@ unsigned int	bignum_inc_num(t_bignum *bignum, t_numlist *cur,
 	return (0);
 }
 
+static void		mul_cycle(t_bignum *bignum, unsigned long long mul)
+{
+	unsigned long long	carry;
+	t_numlist			*cur;
+
+	cur = bignum->least;
+	carry = 0;
+	while (1)
+	{
+		cur->num = cur->num * mul + carry;
+		carry = numlst_get_carry(cur);
+		if (cur == bignum->most)
+			break ;
+		cur = cur->next;
+	}
+	if (carry != 0)
+		bignum_add_numlst(bignum, carry);
+	if (bignum->least == NULL)
+		return ;
+}
+
 void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 {
-	t_numlist			*cur;
-	unsigned long long	carry;
+
 	unsigned long long	mul;
 	int					i;
 
@@ -78,18 +98,7 @@ void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 		}
 		else
 			count -= i;
-		cur = bignum->least;
-		carry = 0;
-		while (1)
-		{
-			cur->num = cur->num * mul + carry;
-			carry = numlst_get_carry(cur);
-			if (cur == bignum->most)
-				break ;
-			cur = cur->next;
-		}
-		if (carry != 0)
-			bignum_add_numlst(bignum, carry);
+		mul_cycle(bignum, mul);
 		if (bignum->least == NULL)
 			return ;
 	}
