@@ -36,6 +36,15 @@ void	printf_sign(t_popts *opts, t_pbuff *pbuff)
 		putchar_pbuff(pbuff, ' ');
 }
 
+void	put_special(int length, t_popts *opts, t_pbuff *pbuff)
+{
+	if (!(opts->flags & F_ZERO))
+		printf_width_pre(length, opts, pbuff);
+	printf_sign(opts, pbuff);
+	if (opts->flags & F_ZERO)
+		printf_width_pre(length, opts, pbuff);
+}
+
 int		simple_atoi_skip(const char **str)
 {
 	int	num;

@@ -1,23 +1,10 @@
 #include "bignums.h"
 #include <stdlib.h>
 
-int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
-															int digit_exp)
+static int		find_cycle(t_bignum *bignum, t_numlist **result, int digit_exp)
 {
 	t_numlist	*cur;
-	int			i;
 
-	if (bignum->limit > 0)
-	{
-		i = bignum->count;
-		while (i++ < bignum->limit && digit_exp < 0)
-			digit_exp += BN_MAX_DIGITS;
-		if (digit_exp >= 0)
-		{
-			*result = NULL;
-			return (0);
-		}
-	}
 	if (digit_exp >= 0)
 	{
 		cur = bignum->least;
@@ -39,6 +26,25 @@ int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
 	}
 	*result = digit_exp >= 0 && digit_exp <= BN_MAX_DIGITS ? cur : NULL;
 	return (digit_exp);
+}
+
+int				bignum_find_numlst(t_bignum *bignum, t_numlist **result,
+															int digit_exp)
+{
+	int			i;
+
+	if (bignum->limit > 0)
+	{
+		i = bignum->count;
+		while (i++ < bignum->limit && digit_exp < 0)
+			digit_exp += BN_MAX_DIGITS;
+		if (digit_exp >= 0)
+		{
+			*result = NULL;
+			return (0);
+		}
+	}
+	return (find_cycle(bignum, result, digit_exp));
 }
 
 /*

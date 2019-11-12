@@ -2,15 +2,6 @@
 #include "ft_printf.h"
 #include <stdio.h>
 
-void	put_special(int length, t_popts *opts, t_pbuff *pbuff)
-{
-	if (!(opts->flags & F_ZERO))
-		printf_width_pre(length, opts, pbuff);
-	printf_sign(opts, pbuff);
-	if (opts->flags & F_ZERO)
-		printf_width_pre(length, opts, pbuff);
-}
-
 void	put_exp(int exp, t_popts *opts, t_pbuff *pbuff)
 {
 	t_popts opts_num;

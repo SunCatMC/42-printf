@@ -2,7 +2,7 @@
 #include "ft_printf.h"
 #include <stdio.h>
 
-void	printf_f_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
+void		printf_f_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	int			length;
 	t_bignum	*integ;
@@ -18,17 +18,14 @@ void	printf_f_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 	printf_width_post(length, opts, pbuff);
 }
 
-void	printf_e_bigldbl(t_bigldbl *bigldbl,
-									int exp, t_popts *opts, t_pbuff *pbuff)
+static int	printf_e_start(t_bignum *bignum, int exp, t_popts *opts,
+															t_pbuff *pbuff)
 {
-	int			length;
-	t_bignum	*bignum;
-	int			ret;
+	int length;
 
 	length = 5 + (exp > 99 || exp < -99 ? 1 : 0) + opts->precision
 					+ ((opts->precision || opts->flags & F_SPECIAL) ? 1 : 0);
 	put_special(length, opts, pbuff);
-	bignum = bigldbl->integ.most->num == 0 ? &bigldbl->fract : &bigldbl->integ;
 	putchar_pbuff(pbuff, (bignum->most->num == 0
 		&& bignum->most != bignum->least ? bignum->most->prev->num
 		: bignum->most->num) / bignum->saved_num_len + '0');
@@ -36,6 +33,18 @@ void	printf_e_bigldbl(t_bigldbl *bigldbl,
 		putchar_pbuff(pbuff, '.');
 	--bignum->saved_len;
 	bignum->saved_num_len /= 10;
+	return (length);
+}
+
+void		printf_e_bigldbl(t_bigldbl *bigldbl, int exp,
+												t_popts *opts, t_pbuff *pbuff)
+{
+	int			length;
+	t_bignum	*bignum;
+	int			ret;
+
+	bignum = bigldbl->integ.most->num == 0 ? &bigldbl->fract : &bigldbl->integ;
+	length = printf_e_start(bignum, exp, opts, pbuff);
 	if (bignum == &bigldbl->fract)
 	{
 		if ((ret = printf_bignum(bignum, 1, opts->precision, pbuff)))
@@ -55,7 +64,7 @@ void	printf_e_bigldbl(t_bigldbl *bigldbl,
 	printf_width_post(length, opts, pbuff);
 }
 
-int		bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
+int			bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
 {
 	int			len_integ;
 	int			len_fract;
@@ -81,7 +90,7 @@ int		bigldbl_g_edge_exp(t_bigldbl *bigldbl, t_popts *opts)
 							: len_integ - bignum_len_g(integ, exp));
 }
 
-void	printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
+void		printf_g_bigldbl(t_bigldbl *bigldbl, t_popts *opts, t_pbuff *pbuff)
 {
 	int exp;
 	int edge;
