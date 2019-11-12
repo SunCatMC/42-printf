@@ -13,42 +13,50 @@
 #include "bignums.h"
 #include <stdlib.h>
 
-int				printf_bignum(t_bignum *bignum, int use_saved,
-									int print_len, t_pbuff *pbuff)
+static unsigned long long	printf_bignum_init(t_bignum *bignum,
+						t_numlist **cur, int use_saved, t_pint *pint)
+{
+	*cur = bignum->most;
+	pint->num_len = use_saved ? bignum->saved_num_len : bignum->most_num_len;
+	while (pint->num_len == 0 || (use_saved && (*cur)->num == 0))
+	{
+		if (*cur == bignum->least)
+			return (0);
+		if (!(use_saved && (*cur)->num == 0) && pint->num_len == 0)
+			pint->num_len = BN_NUM_LEN_MAX;
+		*cur = (*cur)->prev;
+	}
+	pint->len = 0;
+	return (pint->num_len < bignum->most_num_len || (*cur) != bignum->most
+						? (*cur)->num % (pint->num_len * 10) : (*cur)->num);
+}
+
+int			printf_bignum(t_bignum *bignum, int use_saved,
+						int print_len, t_pbuff *pbuff)
 {
 	t_numlist			*cur;
+	t_pint				pint;
 	unsigned long long	num;
-	unsigned long long	num_len;
-	int					len;
 
-	cur = bignum->most;
-	num_len = use_saved ? bignum->saved_num_len : bignum->most_num_len;
-	while (num_len == 0 || (use_saved && cur->num == 0))
+	pint.precision = print_len;
+	num = printf_bignum_init(bignum, &cur, use_saved, &pint);
+	if (cur == bignum->least && (pint.num_len == 0 || (use_saved
+													&& cur->num == 0)))
+		 return (print_len > 0 ? print_len : 0);
+	while (print_len < 0 || pint.len < print_len)
 	{
-		if (cur == bignum->least)
-			return (print_len > 0 ? print_len : 0);
-		if (!(use_saved && cur->num == 0) && num_len == 0)
-			num_len = BN_NUM_LEN_MAX;
-		cur = cur->prev;
-	}
-	num = num_len < bignum->most_num_len || cur != bignum->most
-									? cur->num % (num_len * 10) : cur->num;
-	len = 0;
-	while (print_len < 0 || len < print_len)
-	{
-		while (num_len >= 1 && (print_len < 0
-								|| len < print_len))
+		while (pint.num_len >= 1 && (print_len < 0 || pint.len < print_len))
 		{
-			++len;
-			putchar_pbuff(pbuff, num / num_len + '0');
-			num %= num_len;
-			num_len /= 10;
+			++pint.len;
+			putchar_pbuff(pbuff, num / pint.num_len + '0');
+			num %= pint.num_len;
+			pint.num_len /= 10;
 		}
 		if (cur == bignum->least)
 			break ;
 		cur = cur->prev;
-		num_len = BN_NUM_LEN_MAX;
+		pint.num_len = BN_NUM_LEN_MAX;
 		num = cur->num;
 	}
-	return (print_len > 0 && len < print_len ? print_len - len : 0);
+	return (print_len > 0 && pint.len < print_len ? print_len - pint.len : 0);
 }
