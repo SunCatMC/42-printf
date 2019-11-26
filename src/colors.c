@@ -1,10 +1,9 @@
 #include "libft.h"
-#include "colors.h"
 #include "ft_printf.h"
 
-static char *get_color(int color_id)
+static const char	*get_color(int color_id)
 {
-	char *color_codes[] =
+	const char *color_codes[] =
 	{
 		"black}",
 		"red}",
@@ -20,7 +19,7 @@ static char *get_color(int color_id)
 	return (color_codes[color_id]);
 }
 
-static void	printf_color(t_pbuff *pbuff, const char **fmt, int type,
+static void			printf_color(t_pbuff *pbuff, const char **fmt, int type,
 															int color_id)
 {
 	if (color_id < 8)
@@ -38,7 +37,7 @@ static void	printf_color(t_pbuff *pbuff, const char **fmt, int type,
 		putchar_pbuff(pbuff, '{');
 }
 
-void		parse_colors(t_pbuff *pbuff, const char **fmt)
+void				parse_colors(t_pbuff *pbuff, const char **fmt)
 {
 	int		i;
 	int		ch;
