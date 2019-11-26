@@ -2,6 +2,24 @@
 #include "colors.h"
 #include "ft_printf.h"
 
+static char *get_color(int color_id)
+{
+	char *color_codes[] =
+	{
+		"black}",
+		"red}",
+		"green}",
+		"yellow}",
+		"blue}",
+		"magenta}",
+		"cyan}",
+		"white}",
+		"eoc}"
+	};
+
+	return (color_codes[color_id]);
+}
+
 static void	printf_color(t_pbuff *pbuff, const char **fmt, int type,
 															int color_id)
 {
@@ -32,7 +50,7 @@ void		parse_colors(t_pbuff *pbuff, const char **fmt)
 		++*fmt;
 	}
 	i = 0;
-	while (i <= 8 && ft_strsubcmp(*fmt, g_color_codes[i]))
+	while (i <= 8 && ft_strsubcmp(*fmt, get_color(i)))
 		++i;
 	printf_color(pbuff, fmt, ch, i);
 }
