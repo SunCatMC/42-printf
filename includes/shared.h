@@ -13,7 +13,7 @@
 #ifndef SHARED_H
 # define SHARED_H
 # define PRINTF_BUFF_SIZE 4096
-;
+
 enum				e_printf_flags {
 	F_SPECIAL = 1,
 	F_LEFT = 2,
@@ -26,7 +26,6 @@ enum				e_printf_flags {
 	P_NUM = 256,
 	P_PTR = 512,
 };
-
 enum				e_printf_length {
 	L_CHAR,
 	L_SHORT,
@@ -35,7 +34,6 @@ enum				e_printf_length {
 	L_LONGLONG,
 	L_LONGDOUBLE,
 };
-
 typedef struct		s_num_bin {
 	unsigned long long	fract:64;
 	unsigned short		exp:15;
@@ -45,7 +43,6 @@ typedef union		u_ldbl {
 	long double		num;
 	t_num_bin		bin;
 }					t_ldbl;
-
 typedef struct		s_numlist {
 	unsigned long long	num;
 	struct s_numlist	*next;
@@ -65,7 +62,6 @@ typedef struct		s_bigldbl {
 	t_bignum	integ;
 	t_bignum	fract;
 }					t_bigldbl;
-
 typedef struct		s_popts {
 	int				param;
 	int				width;
@@ -79,14 +75,12 @@ typedef struct		s_pint {
 	int					precision;
 	int					length;
 }					t_pint;
-
 typedef struct		s_pbuff	{
 	char		buff[PRINTF_BUFF_SIZE];
 	int			size;
 	int			printed;
 	t_bigldbl	bigldbl;
 }					t_pbuff;
-
 void				flush_pbuff(t_pbuff *pbuff);
 void				putchar_pbuff(t_pbuff *pbuff, char ch);
 void				putstr_pbuff(t_pbuff *pbuff, const char *str);
