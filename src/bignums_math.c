@@ -78,7 +78,6 @@ static void		mul_cycle(t_bignum *bignum, unsigned long long mul)
 
 void			bignum_mul_small(t_bignum *bignum, unsigned int num, int count)
 {
-
 	unsigned long long	mul;
 	int					i;
 

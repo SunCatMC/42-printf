@@ -24,7 +24,8 @@ LIBNAME = ft
 LIBDIR = libft
 LIBIDIR = libft/includes
 LIBFILE = libft.a
-LIBOBJ = *.o
+LIBOBJ = ft_memchr.o ft_strchrs.o ft_strchr.o ft_isupper.o ft_memccpy.o \
+		 ft_memset.o ft_memcpy.o ft_isdigit.o ft_strsubcmp.o
 
 CFLAGS = -Wall -Werror -Wextra
 DFLAGS = -g

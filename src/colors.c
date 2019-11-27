@@ -3,8 +3,8 @@
 
 static const char	*get_color(int color_id)
 {
-	const char *color_codes[] =
-	{
+	const char *str;
+	const char *color_codes[] = {
 		"black}",
 		"red}",
 		"green}",
@@ -16,7 +16,8 @@ static const char	*get_color(int color_id)
 		"eoc}"
 	};
 
-	return (color_codes[color_id]);
+	str = color_codes[color_id];
+	return (str);
 }
 
 static void			printf_color(t_pbuff *pbuff, const char **fmt, int type,

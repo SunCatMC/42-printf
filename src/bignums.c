@@ -31,7 +31,7 @@ static unsigned long long	printf_bignum_init(t_bignum *bignum,
 						? (*cur)->num % (pint->num_len * 10) : (*cur)->num);
 }
 
-int			printf_bignum(t_bignum *bignum, int use_saved,
+int							printf_bignum(t_bignum *bignum, int use_saved,
 						int print_len, t_pbuff *pbuff)
 {
 	t_numlist			*cur;
@@ -42,7 +42,7 @@ int			printf_bignum(t_bignum *bignum, int use_saved,
 	num = printf_bignum_init(bignum, &cur, use_saved, &pint);
 	if (cur == bignum->least && (pint.num_len == 0 || (use_saved
 													&& cur->num == 0)))
-		 return (print_len > 0 ? print_len : 0);
+		return (print_len > 0 ? print_len : 0);
 	while (print_len < 0 || pint.len < print_len)
 	{
 		while (pint.num_len >= 1 && (print_len < 0 || pint.len < print_len))
